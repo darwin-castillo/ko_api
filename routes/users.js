@@ -14,7 +14,10 @@ router.get('/api/users/all', (req, res) => {
         if (error) {
             throw error
         }
-        res.status(200).json(results.rows)
+        let list = results.rows;
+        let obj = {};
+        obj.list = list;
+        res.status(200).json(obj)
     })
 });
 
