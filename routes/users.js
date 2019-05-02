@@ -17,6 +17,7 @@ router.get('/api/users/all', (req, res) => {
         let list = results.rows;
         let obj = {};
         obj.list = list;
+        obj.count = list.length;
         res.status(200).json(obj)
     })
 });
