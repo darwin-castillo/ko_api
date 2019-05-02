@@ -10,7 +10,7 @@ router.get('/api/users', (req, res) => {
 
 router.get('/api/users/all', (req, res) => {
     console.log('GET USERS');
-    pool.query('SELECT * FROM klo_us ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT * FROM public.klo_us', (error, results) => {
         if (error) {
             throw error
         }
