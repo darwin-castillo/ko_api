@@ -13,7 +13,12 @@ router.get('/api/users/all', (req, res) => {
     console.log('GET USERS');
 
 
-    pool.query('SELECT * FROM public.klop_users', (error, results) => {
+    pool.query('SELECT ' +
+        'id,name,surname,' +
+        'phone,address,city,postcode,' +
+        'image,verified,payment,active,' +
+        'date_created,date_updated,comment,' +
+        'description FROM public.klop_users', (error, results) => {
         if (error) {
             throw error
         }
