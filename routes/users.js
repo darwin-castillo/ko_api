@@ -18,6 +18,7 @@ router.get('/api/users/all', (req, res) => {
         let obj = {};
         obj.list = list;
         obj.count = list.length;
+        obj.otro_campo = "valor!!!";
         res.status(200).json(obj)
     })
 });
