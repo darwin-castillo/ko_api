@@ -72,25 +72,30 @@ router.post('/api/users/', (req, res) => {
             description character varying(40),
             password character varying(40) NOT NULL,
             */
-    if (user.name !== null && user.email !== null) {
+
+    if (typeof user.name !== 'undefined'&&  typeof user.email !== 'undefined' && typeof user.password !== 'undefined') {
         let query = 'INSERT INTO public.klop_users(dni,name,surname,email,phone,address,city,' +
             'postcode,image,comment,description,password) ' +
             ' VALUES('
-            + "'"+(user.dni ? "N/A" : user.dni) + "'"+','
+            + "'"+(typeof user.dni === 'undefined' ? "N/A" : user.dni) + "'"+','
             + "'"+user.name +"'"+ ','
-            + "'"+(user.surname ? "N/A" : user.surname) + "'"+','
+            + "'"+(typeof user.surname === 'undefined'? "N/A" : user.surname) + "'"+','
             + "'"+(user.email) + "'"+','
-            + "'"+(user.phone === null ? "N/A" : user.phone) +"'"+ ','
-            +"'"+ (user.address === null ? "N/A" : user.address) +"'"+ ','
-            + "'"+(user.city === null ? "N/A" : user.city) + "'"+','
-            + "'"+(user.postcode === null ? "N/A" : user.postcode) +"'"+ ','
-            + "'"+(user.image === null ? "N/A" : user.image) + "'"+','
-            + "'"+(user.comment === null ? "N/A" : user.comment) +"'"+ ','
-            + "'"+(user.description === null ? "N/A" : user.description) +"'"+ ','
-            + "'"+(user.password === null ? "N/A" : user.password) +"'"
+            + "'"+(typeof user.phone === 'undefined'  ? "N/A" : user.phone) +"'"+ ','
+            +"'"+ (typeof user.address === 'undefined'  ? "N/A" : user.address) +"'"+ ','
+            + "'"+(typeof user.city === 'undefined' ? "N/A" : user.city) + "'"+','
+            + "'"+(typeof user.postcode === 'undefined' ? "N/A" : user.postcode) +"'"+ ','
+            + "'"+(typeof user.image === 'undefined'? "N/A" : user.image) + "'"+','
+            + "'"+(typeof user.comment === 'undefined' ? "N/A" : user.comment) +"'"+ ','
+            + "'"+(typeof user.description=== 'undefined'? "N/A" : user.description) +"'"+ ','
+            + "'"+(typeof user.name === 'undefined' ? "N/A" : user.password) +"'"
             + ')';
+
+
         console.log(query);
         pool.query(query, (error, results) => {
+         //   let other ="WITH encrypted_data AS (SELECT crypt('"+user.password+"',gen_salt('md5')) as hashed_value) UPDATE klop.users SET password = (SELECT hashed_value FROM encrypted_data);"
+
                 if (error) {
                     throw error
                 }

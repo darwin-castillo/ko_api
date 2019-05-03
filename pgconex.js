@@ -1,5 +1,5 @@
 const Pool = require('pg').Pool
-const environment = 3;
+const environment = 4;
 const pg_user = environment===3?'vrchzfftnlewzg':'postgres';
 const pg_host =  environment===3?'ec2-184-73-210-189.compute-1.amazonaws.com':'localhost';
 const pg_db = environment===3?'d74rfbuj0t08v4':'kleanops';
