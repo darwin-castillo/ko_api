@@ -13,7 +13,7 @@ router.get('/api/users/all', (req, res) => {
     console.log('GET USERS');
 
 
-    pool.query('SELECT ' +
+    pool.query('SELECT  ' +
         'id,name,surname,' +
         'phone,address,city,postcode,' +
         'image,verified,payment,active,' +
