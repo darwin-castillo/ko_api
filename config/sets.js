@@ -25,7 +25,7 @@ const pool_local = {
 const JWT_SEED = 'KlopsAPi_1_dev';
 
 /**
- * Caducity of JWT Aprox 2 years
+ * Caducity of JWT Aprox 1 year
  * @type {number}
  */
 const JWT_CADUCITY =  '365d';
