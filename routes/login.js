@@ -4,6 +4,8 @@ const express = require('express')
 const router = express.Router();
 const pool = require('../pgconex.js');
 const bcrypt = require("bcrypt");
+const JWT_SEED = require("../config/sets").JWT_SEED;
+const JWT_CADUCITY = require("../config/sets").JWT_CADUCITY;
 //app.use(bodyParser.urlencoded({extended: false}))
 //app.use(bodyParser.json({limit:'10mb'}))
 
@@ -42,8 +44,8 @@ router.post('/api/login', (req, res) => {
                         // ANY DATA
                     };
 
-                    let token = jwt.sign(tokenData, 'Secret Password', {
-                        expiresIn: 60 * 60 * 24 // expires in 24 hours
+                    let token = jwt.sign(tokenData,JWT_SEED, {
+                        expiresIn: JWT_CADUCITY
                     });
 
                     let obj_resp = {};

@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const pool = require('../pgconex.js');
 const bcrypt = require("bcrypt");
+const {verifyToken} = require('../middlewares/auth');
 
 
 router.get('/api/users', (req, res) => {
@@ -10,7 +11,7 @@ router.get('/api/users', (req, res) => {
 
 });
 
-router.get('/api/users/all', (req, res) => {
+router.get('/api/users/all',verifyToken, (req, res) => {
     console.log('GET USERS');
 
 
