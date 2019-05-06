@@ -22,13 +22,15 @@ router.get('/api/users/all',verifyToken, (req, res) => {
         'date_created,date_updated,comment,' +
         'description FROM public.klop_users', (error, results) => {
         if (error) {
-            throw error
+           return res.status(500).json({status:500,message:error});
         }
-        let list = results.rows;
-        let obj = {};
-        obj.list = list;
-        obj.count = list.length;
-        res.status(200).json(obj)
+        else {
+            let list = results.rows;
+            let obj = {};
+            obj.list = list;
+            obj.count = list.length;
+            res.status(200).json(obj);
+        }
     })
 });
 
