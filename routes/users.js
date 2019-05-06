@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const pool = require('../pgconex.js');
+const bcrypt = require("bcrypt");
 
 
 router.get('/api/users', (req, res) => {
@@ -49,7 +50,7 @@ router.post('/api/users/', (req, res) => {
         password: null,
 
     }
-     user = req.body;
+    user = req.body;
 
     /*
         id bigserial not null,
@@ -73,44 +74,61 @@ router.post('/api/users/', (req, res) => {
             password character varying(40) NOT NULL,
             */
 
-    if (typeof user.name !== 'undefined'&&  typeof user.email !== 'undefined' && typeof user.password !== 'undefined') {
-        let query = 'INSERT INTO public.klop_users(dni,name,surname,email,phone,address,city,' +
-            'postcode,image,comment,description,password) ' +
-            ' VALUES('
-            + "'"+(typeof user.dni === 'undefined' ? "N/A" : user.dni) + "'"+','
-            + "'"+user.name +"'"+ ','
-            + "'"+(typeof user.surname === 'undefined'? "N/A" : user.surname) + "'"+','
-            + "'"+(user.email) + "'"+','
-            + "'"+(typeof user.phone === 'undefined'  ? "N/A" : user.phone) +"'"+ ','
-            +"'"+ (typeof user.address === 'undefined'  ? "N/A" : user.address) +"'"+ ','
-            + "'"+(typeof user.city === 'undefined' ? "N/A" : user.city) + "'"+','
-            + "'"+(typeof user.postcode === 'undefined' ? "N/A" : user.postcode) +"'"+ ','
-            + "'"+(typeof user.image === 'undefined'? "N/A" : user.image) + "'"+','
-            + "'"+(typeof user.comment === 'undefined' ? "N/A" : user.comment) +"'"+ ','
-            + "'"+(typeof user.description=== 'undefined'? "N/A" : user.description) +"'"+ ','
-            + "'"+(typeof user.name === 'undefined' ? "N/A" : user.password) +"'"
-            + ')';
+
+    if (typeof user.name !== 'undefined' && typeof user.email !== 'undefined' && typeof user.password !== 'undefined') {
+
+        bcrypt.hash(user.password, 4, (err, hash) => {
+
+            let query = 'INSERT INTO public.klop_users(dni,name,surname,email,phone,address,city,' +
+                'postcode,image,comment,description,password) ' +
+                ' VALUES('
+                + "'" + (typeof user.dni === 'undefined' ? "N/A" : user.dni) + "'" + ','
+                + "'" + user.name + "'" + ','
+                + "'" + (typeof user.surname === 'undefined' ? "N/A" : user.surname) + "'" + ','
+                + "'" + (user.email) + "'" + ','
+                + "'" + (typeof user.phone === 'undefined' ? "N/A" : user.phone) + "'" + ','
+                + "'" + (typeof user.address === 'undefined' ? "N/A" : user.address) + "'" + ','
+                + "'" + (typeof user.city === 'undefined' ? "N/A" : user.city) + "'" + ','
+                + "'" + (typeof user.postcode === 'undefined' ? "N/A" : user.postcode) + "'" + ','
+                + "'" + (typeof user.image === 'undefined' ? "N/A" : user.image) + "'" + ','
+                + "'" + (typeof user.comment === 'undefined' ? "N/A" : user.comment) + "'" + ','
+                + "'" + (typeof user.description === 'undefined' ? "N/A" : user.description) + "'" + ','
+                + "'" + hash + "'"
+                + ')';
 
 
-        console.log(query);
-        pool.query(query, (error, results) => {
-         //   let other ="WITH encrypted_data AS (SELECT crypt('"+user.password+"',gen_salt('md5')) as hashed_value) UPDATE klop.users SET password = (SELECT hashed_value FROM encrypted_data);"
+            console.log(query);
+            pool.query(query, (error, results) => {
+                //   let other ="WITH encrypted_data AS (SELECT crypt('"+user.password+"',gen_salt('md5')) as hashed_value) UPDATE klop.users SET password = (SELECT hashed_value FROM encrypted_data);"
 
                 if (error) {
-                    throw error
+                    //  throw error
+                    if (error.code === '23505') {
+                        res.status(500).json({
+                            status: 500,
+                            message: "El correo electrónico " + user.email + " ya se encuentra registado, intente nuevamente con otro distinto"
+                        })
+                    }
+                    else
+                        res.status(500).json({status: 500, message: error})
+
                 }
-                let list = results.rows;
-                let obj = {};
-                obj.list = list;
-                obj.count = list.length;
-                res.status(200).json({status: 201, message: "Usuario guardado con exito"});
-            }
-        )
-        ;
+                else {
+                    let list = results.rows;
+                    let obj = {};
+                    obj.list = list;
+                    obj.count = list.length;
+                    res.status(200).json({status: 201, message: "Usuario guardado con exito"});
+                }
+            });
+
+        });
+
+
     }
     else {
         console.log("ERROR POST DATA");
-        res.status(500).json({status: 500, message: "Los campos id, name y email son obligatorios"});
+        res.status(500).json({status: 500, message: "Los campos nombre,email y password son obligatorios"});
 
 
     }
