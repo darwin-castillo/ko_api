@@ -11,7 +11,7 @@ router.get('/api/users', (req, res) => {
 
 });
 
-router.get('/api/users/all',verifyToken, (req, res) => {
+router.get('/api/users/all', verifyToken, (req, res) => {
     console.log('GET USERS');
 
 
@@ -22,7 +22,7 @@ router.get('/api/users/all',verifyToken, (req, res) => {
         'date_created,date_updated,comment,' +
         'description FROM public.klop_users', (error, results) => {
         if (error) {
-           return res.status(500).json({status:500,message:error});
+            return res.status(500).json({status: 500, message: error});
         }
         else {
             let list = results.rows;
@@ -35,7 +35,7 @@ router.get('/api/users/all',verifyToken, (req, res) => {
 });
 
 
-router.post('/api/users/', (req, res) => {
+router.post('/api/users/',(req, res) => {
     console.log('POST USERS api/users');
     console.log('body ', req.body);
     let user = {
@@ -77,13 +77,13 @@ router.post('/api/users/', (req, res) => {
             password character varying(40) NOT NULL,
             */
 
-
-    if (typeof user.name !== 'undefined' && typeof user.email !== 'undefined' && typeof user.password !== 'undefined') {
+    let less = [];
+    if (typeof user.name !== 'undefined' && typeof user.email !== 'undefined' && typeof user.password !== 'undefined' && typeof user.role !== 'undefined') {
 
         bcrypt.hash(user.password, 4, (err, hash) => {
 
             let query = 'INSERT INTO public.klop_users(dni,name,surname,email,phone,address,city,' +
-                'postcode,image,comment,description,password) ' +
+                'postcode,image,comment,description,id_role_fk,password) ' +
                 ' VALUES('
                 + "'" + (typeof user.dni === 'undefined' ? "N/A" : user.dni) + "'" + ','
                 + "'" + user.name + "'" + ','
@@ -96,6 +96,7 @@ router.post('/api/users/', (req, res) => {
                 + "'" + (typeof user.image === 'undefined' ? "N/A" : user.image) + "'" + ','
                 + "'" + (typeof user.comment === 'undefined' ? "N/A" : user.comment) + "'" + ','
                 + "'" + (typeof user.description === 'undefined' ? "N/A" : user.description) + "'" + ','
+                + "" + user.role + ','
                 + "'" + hash + "'"
                 + ')';
 
@@ -110,6 +111,12 @@ router.post('/api/users/', (req, res) => {
                         res.status(500).json({
                             status: 500,
                             message: "El correo electrónico " + user.email + " ya se encuentra registado, intente nuevamente con otro distinto"
+                        })
+                    }
+                    if (error.code === '23503') {
+                        res.status(500).json({
+                            status: 500,
+                            message: "El rol indicado no existe"
                         })
                     }
                     else
@@ -131,10 +138,40 @@ router.post('/api/users/', (req, res) => {
     }
     else {
         console.log("ERROR POST DATA");
-        res.status(500).json({status: 500, message: "Los campos nombre,email y password son obligatorios"});
+        if (typeof user.name === 'undefined') {
 
+            less.push('name');
+            //res.status(500).json({status: 500, message: "El "});
+        }
+        if (typeof user.email === 'undefined') {
+            less.push('email');
+        }
+        if (typeof user.password === 'undefined') {
+
+            less.push('password');
+            //res.status(500).json({status: 500, message: "El "});
+        }
+        if (typeof user.role === 'undefined') {
+
+            less.push('role');
+            //res.status(500).json({status: 500, message: "El "});
+        }
+
+        res.status(500).json({
+            status: 500,
+            message: (less.length > 1 ? "Los siguientes campos son obligatorios: " : "El siguiente campos es obligatorio: ") + less.join(',') + " "
+        });
 
     }
+
+});
+
+router.put('/api/users/',verifyToken,(req, res) => {
+    console.log('PUT current user api/users');
+  res.status(200).json({
+      message:'endpoint en proceso'
+  });
+
 });
 
 
