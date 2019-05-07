@@ -52,6 +52,7 @@ router.post('/api/login', (req, res) => {
                     obj_resp.user = user;
                     obj_resp.token = token;
                     delete obj_resp.user.password;
+                    obj_resp.status = 200;
                     res.status(200).json(obj_resp);
 
                 }
@@ -59,14 +60,12 @@ router.post('/api/login', (req, res) => {
             });
         }
         else {
-            res.status(401).send({error: 'usuario o contraseña inválidos'});
+            res.status(401).send({status:401,error: 'usuario o contraseña inválidos'});
             return;
 
         }
 
-
     });
-
 
 });
 
