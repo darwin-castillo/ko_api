@@ -33,9 +33,10 @@ router.post('/api/login', (req, res) => {
             user = obj[0];
             bcrypt.compare(password, user.password, (err, pass_res) => {
                 // res == true
-                console.log("response: ", pass_res);
+
                 if (!pass_res) {
-                    res.status(401).send({error: 'usuario o contraseña inválidos'});
+
+                    res.status(401).json({status:401,error: 'usuario o contraseña inválidos'});
                     return;
                 }
                 else {
