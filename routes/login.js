@@ -15,7 +15,7 @@ router.post('/api/login', (req, res) => {
     let user = {};
 
 
-    pool.query("SELECT name,surname,email,address,image,verified,password"
+    pool.query("SELECT name,surname,email,address,image,verified,password,id_role_fk as role"
         + " FROM klop_users WHERE email='" + username + "'", (error, results) => {
         if (error) {
             console.log("error ", error);
@@ -41,7 +41,9 @@ router.post('/api/login', (req, res) => {
                 }
                 else {
                     let tokenData = {
-                        username: username
+                        username: username,
+                        address:user.address,
+
                         // ANY DATA
                     };
 
@@ -50,10 +52,12 @@ router.post('/api/login', (req, res) => {
                     });
 
                     let obj_resp = {};
+                    user.role = parseInt(user.role);
                     obj_resp.user = user;
                     obj_resp.token = token;
                     delete obj_resp.user.password;
                     obj_resp.status = 200;
+
                     res.status(200).json(obj_resp);
 
                 }

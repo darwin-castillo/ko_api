@@ -107,20 +107,26 @@ router.post('/api/users/',(req, res) => {
 
                 if (error) {
                     //  throw error
+                    console.log(error);
                     if (error.code === '23505') {
-                        res.status(500).json({
+                       res.status(500).json({
                             status: 500,
-                            message: "El correo electrónico " + user.email + " ya se encuentra registado, intente nuevamente con otro distinto"
+                            message: "The email " + user.email + " is already registered, try again with a different one"
                         })
+                        return;
                     }
-                    if (error.code === '23503') {
-                        res.status(500).json({
+                    else if (error.code === '23503') {
+                       res.status(500).json({
                             status: 500,
-                            message: "El rol indicado no existe"
+                            message: "this role not exist"
                         })
+                        return;
                     }
-                    else
+                    else{
                         res.status(500).json({status: 500, message: error})
+                        return;
+                    }
+
 
                 }
                 else {
@@ -128,7 +134,7 @@ router.post('/api/users/',(req, res) => {
                     let obj = {};
                     obj.list = list;
                     obj.count = list.length;
-                    res.status(200).json({status: 201, message: "Usuario guardado con exito"});
+                    res.status(201).json({status: 201, message: "Successfully registered user!"});
                 }
             });
 
