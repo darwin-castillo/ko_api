@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const environment = 2;  // 1 -> Production   // 2-> Dev  // 3-> Local
+const environment = 3;  // 1 -> Production   // 2-> Dev  // 3-> Local
 const pg_user = environment===2?'vrchzfftnlewzg':'postgres';
 const pg_host =  environment===2?'ec2-184-73-210-189.compute-1.amazonaws.com':'localhost';
 const pg_db = environment===2?'d74rfbuj0t08v4':'kleanops';

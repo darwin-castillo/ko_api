@@ -16,10 +16,10 @@ router.get('/api/users/all', verifyToken, (req, res) => {
 
 
     pool.query('SELECT  ' +
-        'id,name,surname,' +
+        'id,name,surname,email,' +
         'phone,address,city,postcode,' +
         'image,verified,payment,active,' +
-        'date_created,date_updated,comment,' +
+        'date_created,date_updated,comment,id_role_fk as role,' +
         'description FROM public.klop_users', (error, results) => {
         if (error) {
             return res.status(500).json({status: 500, message: error});
