@@ -13,14 +13,15 @@ router.get('/api/users', (req, res) => {
 
 router.get('/api/users/all', verifyToken, (req, res) => {
     console.log('GET USERS');
+    let query = 'SELECT  ' +
+        'u.id,u.name,u.surname,u.email,' +
+        'u.phone,u.address,u.city,u.postcode,' +
+        'u.image,u.verified,u.payment,u.active,' +
+        'u.date_created,u.date_updated,u.comment,r.title as role,' +
+        'u.description FROM public.klop_users u, public.klop_role r WHERE r.id = u.id_role_fk';
+console.log(query);
 
-
-    pool.query('SELECT  ' +
-        'id,name,surname,email,' +
-        'phone,address,city,postcode,' +
-        'image,verified,payment,active,' +
-        'date_created,date_updated,comment,id_role_fk as role,' +
-        'description FROM public.klop_users', (error, results) => {
+    pool.query(query, (error, results) => {
         if (error) {
             return res.status(500).json({status: 500, message: error});
         }
