@@ -6,6 +6,7 @@ const pool = require('../pgconex.js');
 const bcrypt = require("bcrypt");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const JWT_CADUCITY = require("../config/sets").JWT_CADUCITY;
+const User = require('../models/users');
 //app.use(bodyParser.urlencoded({extended: false}))
 //app.use(bodyParser.json({limit:'10mb'}))
 
@@ -73,6 +74,28 @@ router.post('/api/login', (req, res) => {
     });
 
 });
+
+router.post('/api/login2',(req,res)=>{
+    let username = req.body.username;
+    let password = req.body.password;
+    let user = {};
+
+    User.findAll(
+        {  attributes: ['id', 'name'],
+            like: {
+                name: 'Darwin'
+            }
+        }
+)
+.then(user => {
+        console.log(user);
+        res.status(200).json(user)
+    })
+        .catch(err => {
+            console.log(err)
+        })
+
+})
 
 router.get('/secure', (req, res) => {
     let token = req.headers['Authorization'];
