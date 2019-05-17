@@ -16,7 +16,7 @@ router.post('/api/login', (req, res) => {
     let user = {};
 
 
-    pool.query("SELECT name,surname,email,address,image,verified,password,id_role_fk as role"
+    pool.query("SELECT id,name,surname,email,address,image,verified,password,id_role_fk as role"
         + " FROM klop_users WHERE email='" + username + "'", (error, results) => {
         if (error) {
             console.log("error ", error);
@@ -41,12 +41,17 @@ router.post('/api/login', (req, res) => {
                     return;
                 }
                 else {
+
                     let tokenData = {
+                        id:user.id,
                         username: username,
-                        address:user.address,
+                        email:user.email,
+
 
                         // ANY DATA
                     };
+
+
 
                     let token = jwt.sign(tokenData,JWT_SEED, {
                         expiresIn: JWT_CADUCITY
