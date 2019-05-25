@@ -13,7 +13,10 @@ const User = require('../models/users');
 router.post('/api/login', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
+    let fcm = req.body.fcm_token;
     let user = {};
+    let user_agent = req.useragent.source;
+
 
 
     pool.query("SELECT id,name,surname,email,address,image,verified,password,id_role_fk as role"
@@ -37,23 +40,22 @@ router.post('/api/login', (req, res) => {
 
                 if (!pass_res) {
 
-                    res.status(401).json({status:401,error: 'usuario o contraseña inválidos'});
+                    res.status(401).json({status: 401, error: 'usuario y/o contraseña inválidos'});
                     return;
                 }
                 else {
 
                     let tokenData = {
-                        id:user.id,
+                        id: user.id,
                         username: username,
-                        email:user.email,
+                        email: user.email,
 
 
                         // ANY DATA
                     };
 
 
-
-                    let token = jwt.sign(tokenData,JWT_SEED, {
+                    let token = jwt.sign(tokenData, JWT_SEED, {
                         expiresIn: JWT_CADUCITY
                     });
 
@@ -64,14 +66,28 @@ router.post('/api/login', (req, res) => {
                     delete obj_resp.user.password;
                     obj_resp.status = 200;
 
-                    res.status(200).json(obj_resp);
+                    console.log("fcm ",fcm);
+
+let token_query = "INSERT INTO public.klop_users_tokens(id_user,token,date_created,active,fcm_token,user_agent)  \n" +
+    "  VALUES(" + user.id + ",'" + obj_resp.token + "',now(),true,"+(typeof fcm==='undefined'?"NULL":"'"+fcm+"'")+",'"+user_agent+"')";
+console.log(token_query)
+                    pool.query(token_query
+
+                        , (errr, results) => {
+                            console.log("token process");
+                            console.log("error-> ",errr);
+                            console.log(results);
+                            res.status(200).json(obj_resp);
+
+                        });
+
 
                 }
 
             });
         }
         else {
-            res.status(401).send({status:401,error: 'usuario o contraseña inválidos'});
+            res.status(401).send({status: 401, error: 'usuario o contraseña inválidos'});
             return;
 
         }
@@ -80,22 +96,23 @@ router.post('/api/login', (req, res) => {
 
 });
 
-router.post('/api/login2',(req,res)=>{
+router.post('/api/login2', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
     let user = {};
 
     User.findAll(
-        {  attributes: ['id', 'name'],
+        {
+            attributes: ['id', 'name'],
             like: {
                 name: 'Darwin'
             }
         }
-)
-.then(user => {
-        console.log(user);
-        res.status(200).json(user)
-    })
+    )
+        .then(user => {
+            console.log(user);
+            res.status(200).json(user)
+        })
         .catch(err => {
             console.log(err)
         })

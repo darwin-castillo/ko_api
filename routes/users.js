@@ -36,6 +36,8 @@ console.log(query);
 });
 
 
+
+
 router.post('/api/users/',(req, res) => {
     console.log('POST USERS api/users');
     console.log('body ', req.body);
