@@ -278,7 +278,7 @@ let sendToCleaner = false;
                         else {
 
                            if(sendToCleaner) {
-                               pool.query(SELECT_JOBS + ' WHERE jo.id=' + id, (er, rest) => {
+                               pool.query(SELECT_JOBS + " WHERE jo.id=" + req.params.id, (er, rest) => {
 
                                    let mailOptions = {
                                        from: 'darwin.c5@gmail.com',
