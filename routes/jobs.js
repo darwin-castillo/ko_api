@@ -8,7 +8,7 @@ const JWT_SEED = require("../config/sets").JWT_SEED;
 
 const SELECT_JOBS = "SELECT    " +
     "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
-    " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, " +
+    " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
     "du.name as cleaner, du.id as id_cleaner " +
     "FROM  public.klop_jobs as jo " +
     "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
