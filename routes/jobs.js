@@ -277,27 +277,31 @@ let sendToCleaner = false;
                         }
                         else {
 
-                            pool.query(SELECT_JOBS+' WHERE jo.id=' + id, (er, rest) => {
+                           if(sendToCleaner) {
+                               pool.query(SELECT_JOBS + ' WHERE jo.id=' + id, (er, rest) => {
 
-                                 let mailOptions = {
-                                    from: 'darwin.c5@gmail.com',
-                                    to:rest.rows[0].email_cleaner ,
-                                    subject: 'Job Accepted',
-                                    text: 'A job you applied for has been accepted\n Id Job: '+id+
-                                    '\n Client: '+rest.rows[0].autor+"\n Job: "+rest.rows[0].title
-                                };
+                                   let mailOptions = {
+                                       from: 'darwin.c5@gmail.com',
+                                       to: rest.rows[0].email_cleaner,
+                                       subject: 'Job Accepted',
+                                       text: 'A job you applied for has been accepted\n Id Job: ' + id +
+                                       '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title
+                                   };
 
-                                transporter.sendMail(mailOptions, (err_s,info)=>{
-                                    if (err_s) {
-                                        console.log(err_s);
-                                    } else {
-                                        console.log('Email sent: ' + info.response);
-                                    }
-                                });
-                                res.status(200).json({status: 200, message: "job is updated!"});
-                            });
+                                   transporter.sendMail(mailOptions, (err_s, info) => {
+                                       if (err_s) {
+                                           console.log(err_s);
+                                       } else {
+                                           console.log('Email sent: ' + info.response);
+                                       }
+                                   });
+                                   res.status(200).json({status: 200, message: "job is updated!"});
+                               });
 
-
+                           }
+                           else{
+                               res.status(200).json({status: 200, message: "job is updated!"});
+                           }
 
                         }
                     });
