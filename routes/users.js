@@ -5,10 +5,28 @@ const bcrypt = require("bcrypt");
 const {verifyToken} = require('../middlewares/auth');
 
 
-router.get('/api/users', (req, res) => {
-    console.log('GET USERS');
-    res.send({message: "API OK!"});
+router.get('/api/users/:id', (req, res) => {
+    console.log('GET USER ');
 
+    let query = 'SELECT  ' +
+        'u.id,u.name,u.surname,u.email,' +
+        'u.phone,u.address,u.city,u.postcode,' +
+        'u.image,u.verified,u.payment,u.active,' +
+        'u.date_created,u.date_updated,u.comment,r.title as role,' +
+        'u.description FROM public.klop_users u, public.klop_role r WHERE r.id = u.id_role_fk AND u.id='+req.params.id;
+    console.log(query);
+
+    pool.query(query, (error, results) => {
+        if (error) {
+            return res.status(500).json({status: 500, message: error});
+        }
+        else {
+            let list = results.rows;
+            let obj = list[0];
+
+            res.status(200).json(obj);
+        }
+    })
 });
 
 router.get('/api/users/all', verifyToken, (req, res) => {
@@ -175,11 +193,31 @@ router.post('/api/users/',(req, res) => {
 
 });
 
-router.put('/api/users/',verifyToken,(req, res) => {
+router.put('/api/current/user/',verifyToken,(req, res) => {
     console.log('PUT current user api/users');
-  res.status(200).json({
+ /* res.status(200).json({
       message:'endpoint en proceso'
   });
+  */
+    let token = req.get('Authorization');
+
+
+    jwt.verify(token, JWT_SEED, (err, decoded) => {
+        if (err) {
+            res.status(500).json({error: 500, message: err})
+        }
+        else {
+            if (typeof decoded.id !== 'undefined') {
+
+
+
+
+            }
+        }
+    });
+
+
+
 
 });
 

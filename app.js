@@ -19,6 +19,8 @@ app.use(useragent.express());
 app.use(require('./routes/users'));
 app.use(require('./routes/jobs'));
 app.use(require('./routes/login'));
+app.use(require('./routes/proposals'));
+
 
 
 io.on('connection',(socket)=> {
