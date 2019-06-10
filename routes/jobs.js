@@ -13,7 +13,11 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'darwin.c5@gmail.com',
         pass: 'jeda090301014'
-    }
+    },
+
+    host: 'smtp.google.com',
+    port: 25,
+    secure: false,
 });
 
 const SELECT_JOBS = "SELECT    " +
