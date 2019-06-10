@@ -164,13 +164,13 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                 ) {
 
 
-                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule) ' +
+                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule, id_status) ' +
                         ' VALUES('
                         + "'" + job.title + "',"
                         + "'" + (typeof job.description === 'undefined' ? "N/A" : job.description) + "',"
                         + "" + decoded.id + ","
                         + "'" + (typeof job.date_deadline === 'undefined' ? "N/A" : job.date_deadline) + "',"
-                        + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "'"
+                        + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2"
                         + ")";
                     //  console.log(query);
 
@@ -284,7 +284,7 @@ let sendToCleaner = false;
                                        from: 'darwin.c5@gmail.com',
                                        to: rest.rows[0].email_cleaner,
                                        subject: 'Job Accepted',
-                                       text: 'A job you applied for has been accepted\n Id Job: ' + id +
+                                       text: 'A job you applied for has been accepted\n Id Job: ' + req.params.id +
                                        '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title
                                    };
 
