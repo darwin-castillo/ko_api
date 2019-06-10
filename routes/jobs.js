@@ -6,6 +6,16 @@ const {verifyToken} = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const JWT_SEED = require("../config/sets").JWT_SEED;
 
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'darwin.c5@gmail.com',
+        pass: 'jeda090301014'
+    }
+});
+
 const SELECT_JOBS = "SELECT    " +
     "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
     " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
@@ -234,7 +244,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 let query = "UPDATE klop_jobs SET  ";
                 let fields = [];
                 let somevalue = false;
-
+let sendToCleaner = false;
                 if (body.id_status) {
                     fields.push("id_status=" + body.id_status);
                     somevalue = true;
@@ -243,6 +253,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 if (body.id_cleaner) {
                     fields.push("users_id_cleaner=" + body.id_cleaner);
                     somevalue = true;
+                    sendToCleaner = true;
                 }
 
                 if (body.id_valoration) {
@@ -264,7 +275,29 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                             });
                         }
                         else {
-                            res.status(200).json({status: 200, message: "job is updated!"});
+
+                            pool.query(SELECT_JOBS+' WHERE jo.id=' + id, (er, rest) => {
+
+                                 let mailOptions = {
+                                    from: 'darwin.c5@gmail.com',
+                                    to:rest.rows[0].email_cleaner ,
+                                    subject: 'Job Accepted',
+                                    text: 'A job you applied for has been accepted\n Id Job: '+id+
+                                    '\n Client: '+rest.rows[0].autor+"\n Job: "+rest.rows[0].title
+                                };
+
+                                transporter.sendMail(mailOptions, (err_s,info)=>{
+                                    if (err_s) {
+                                        console.log(err_s);
+                                    } else {
+                                        console.log('Email sent: ' + info.response);
+                                    }
+                                });
+                                res.status(200).json({status: 200, message: "job is updated!"});
+                            });
+
+
+
                         }
                     });
                 }
