@@ -269,6 +269,7 @@ let sendToCleaner = false;
                     pool.query(query, (error, results) => {
                         console.log(results);
                         if (error) {
+                            console.log("error ",error);
                             res.status(500).json({
                                 status: 500,
                                 message: error
