@@ -293,58 +293,6 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                                         '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title + rest.rows[0].description
                                     };
 
-                                    let sendNotification = new Promise((resolve, reject)=>{
-
-                                        pool.query("select fcm_token from klop_users_tokens",(tok_err,tok_res)=>{
-
-                                            let list = tok_res.rows;
-                                            let i =0;
-
-                                            list.forEach( (item)=> {
-                                                    i++;
-                                              axios({
-                                                    method: 'post',
-                                                    url: 'https://fcm.googleapis.com/fcm/send',
-                                                    data:  {
-                                                        "to": item.fcm_token,
-
-                                                        "collapse_key": "type_a",
-                                                        "notification": {
-                                                            "body": "test kleanops "+i,
-                                                            "title": "kleanops"
-                                                        },
-                                                        "data": {
-                                                            "body": "from postman 2",
-                                                            "title": "from postman 2",
-                                                            "key_1": "Value for key_1",
-                                                            "key_2": "Value for key_2"
-                                                        }
-                                                    },
-                                                    config: { headers: {"Authorization": "key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl",
-                                                    "Content-Type":"application/json"}}
-                                                })
-
-                                                    .then(function (ree) {
-                                                        console.log(ree);
-
-                                                    })
-                                                    .catch(function (errc) {
-                                                        console.log(errc);
-
-                                                    });
-
-                                            });
-
-                                            resolve();
-
-
-                                        });
-
-
-                                    });
-
-
-
                                     transporter.sendMail(mailOptions, (err_s, info) => {
                                         if (err_s) {
                                             console.log(err_s);
@@ -352,6 +300,60 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                                             console.log('Email sent: ' + info.response);
                                         }
                                     });
+
+                                    /*
+                                       let sendNotification = new Promise((resolve, reject)=>{
+
+                                           pool.query("select fcm_token from klop_users_tokens",(tok_err,tok_res)=>{
+
+                                               let list = tok_res.rows;
+                                               let i =0;
+
+                                               list.forEach( (item)=> {
+                                                       i++;
+                                                 axios({
+                                                       method: 'post',
+                                                       url: 'https://fcm.googleapis.com/fcm/send',
+                                                       data:  {
+                                                           "to": item.fcm_token,
+
+                                                           "collapse_key": "type_a",
+                                                           "notification": {
+                                                               "body": "test kleanops "+i,
+                                                               "title": "kleanops"
+                                                           },
+                                                           "data": {
+                                                               "body": "from postman 2",
+                                                               "title": "from postman 2",
+                                                               "key_1": "Value for key_1",
+                                                               "key_2": "Value for key_2"
+                                                           }
+                                                       },
+                                                       config: { headers: {"Authorization": "key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl",
+                                                       "Content-Type":"application/json"}}
+                                                   })
+
+                                                       .then(function (ree) {
+                                                           console.log(ree);
+
+                                                       })
+                                                       .catch(function (errc) {
+                                                           console.log(errc);
+
+                                                       });
+
+                                               });
+
+                                               resolve();
+
+
+                                           });
+
+
+                                       });
+   */
+
+
                                     res.status(200).json({status: 200, message: "job is updated!"});
                                 });
 
