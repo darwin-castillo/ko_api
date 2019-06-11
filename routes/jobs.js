@@ -302,7 +302,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
 
                                             list.forEach( (item)=> {
                                                     i++;
-                                                axios.post('https://fcm.googleapis.com/fcm/send', {
+                                                axios.post('https://fcm.googleapis.com/fcm/send',[ {
                                                     "to": item.fcm_token,
 
                                                     "collapse_key": "type_a",
@@ -316,7 +316,10 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                                                         "key_1": "Value for key_1",
                                                         "key_2": "Value for key_2"
                                                     }
-                                                })
+                                                },{
+                                                    headers: {'Authorization': 'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl',
+                                                    'Content-Type':'application/json'},
+                                                }])
                                                     .then(function (ree) {
                                                         console.log(ree);
 
