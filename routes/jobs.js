@@ -5,20 +5,19 @@ const bcrypt = require("bcrypt");
 const {verifyToken} = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const JWT_SEED = require("../config/sets").JWT_SEED;
+const smtpPool = require('nodemailer-smtp-pool');
 
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport(smtpPool({
     service: 'gmail',
     auth: {
         user: 'darwin.c5@gmail.com',
         pass: 'jeda090301014'
     },
-
-    host: 'smtp.google.com',
-    port: 25,
-    secure: false,
-});
+    maxConnections: 5,
+    maxMessages: 10,
+}));
 
 const SELECT_JOBS = "SELECT    " +
     "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
@@ -55,9 +54,9 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         + ' klop_jobs.users_id_autor = klop_users.id  AND klop_job_status.id = klop_jobs.id_status ORDER BY klop_jobs.id desc';
 
      */
-let select = SELECT_JOBS;
+    let select = SELECT_JOBS;
     if (req.query.cleaner) {
-      select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
+        select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
 
     console.log(select);
@@ -248,7 +247,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 let query = "UPDATE klop_jobs SET  ";
                 let fields = [];
                 let somevalue = false;
-let sendToCleaner = false;
+                let sendToCleaner = false;
                 if (body.id_status) {
                     fields.push("id_status=" + body.id_status);
                     somevalue = true;
@@ -273,7 +272,7 @@ let sendToCleaner = false;
                     pool.query(query, (error, results) => {
                         console.log(results);
                         if (error) {
-                            console.log("error ",error);
+                            console.log("error ", error);
                             res.status(500).json({
                                 status: 500,
                                 message: error
@@ -281,31 +280,31 @@ let sendToCleaner = false;
                         }
                         else {
 
-                           if(sendToCleaner) {
-                               pool.query(SELECT_JOBS + " WHERE jo.id=" + req.params.id, (er, rest) => {
+                            if (sendToCleaner) {
+                                pool.query(SELECT_JOBS + " WHERE jo.id=" + req.params.id, (er, rest) => {
 
-                                   let mailOptions = {
-                                       from: 'darwin.c5@gmail.com',
-                                       to: rest.rows[0].email_cleaner,
-                                       subject: 'Job Accepted',
-                                       text: 'A job you applied for has been accepted\n Id Job: ' + req.params.id +
-                                       '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title
-                                   };
+                                    let mailOptions = {
+                                        from: 'darwin.c5@gmail.com',
+                                        to: rest.rows[0].email_cleaner,
+                                        subject: 'Job Accepted',
+                                        text: 'A job you applied for has been accepted\n Id Job: ' + req.params.id +
+                                        '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title
+                                    };
 
-                                   transporter.sendMail(mailOptions, (err_s, info) => {
-                                       if (err_s) {
-                                           console.log(err_s);
-                                       } else {
-                                           console.log('Email sent: ' + info.response);
-                                       }
-                                   });
-                                   res.status(200).json({status: 200, message: "job is updated!"});
-                               });
+                                    transporter.sendMail(mailOptions, (err_s, info) => {
+                                        if (err_s) {
+                                            console.log(err_s);
+                                        } else {
+                                            console.log('Email sent: ' + info.response);
+                                        }
+                                    });
+                                    res.status(200).json({status: 200, message: "job is updated!"});
+                                });
 
-                           }
-                           else{
-                               res.status(200).json({status: 200, message: "job is updated!"});
-                           }
+                            }
+                            else {
+                                res.status(200).json({status: 200, message: "job is updated!"});
+                            }
 
                         }
                     });
