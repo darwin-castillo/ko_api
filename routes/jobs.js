@@ -317,8 +317,8 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                                                         "key_2": "Value for key_2"
                                                     }
                                                 },{
-                                                    headers: {'Authorization': 'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl',
-                                                    'Content-Type':'application/json'},
+                                                    headers: {"Authorization": "key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl",
+                                                    "Content-Type":"application/json"},
                                                 }])
                                                     .then(function (ree) {
                                                         console.log(ree);
