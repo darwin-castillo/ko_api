@@ -6,6 +6,8 @@ const {verifyToken} = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const smtpPool = require('nodemailer-smtp-pool');
+const axios = require('axios');
+
 
 const nodemailer = require('nodemailer');
 
@@ -288,8 +290,53 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                                         to: rest.rows[0].email_cleaner,
                                         subject: 'Job Accepted',
                                         text: 'A job you applied for has been accepted\n Id Job: ' + req.params.id +
-                                        '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title
+                                        '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title + rest.rows[0].description
                                     };
+
+                                    let sendNotification = new Promise((resolve, reject)=>{
+
+                                        pool.query("select fcm_token from klop_users_tokens",(tok_err,tok_res)=>{
+
+                                            let list = tok_res.rows;
+                                            let i =0;
+
+                                            list.forEach( (item)=> {
+                                                    i++;
+                                                axios.post('https://fcm.googleapis.com/fcm/send', {
+                                                    "to": item.fcm_token,
+
+                                                    "collapse_key": "type_a",
+                                                    "notification": {
+                                                        "body": "test kleanops "+i,
+                                                        "title": "kleanops"
+                                                    },
+                                                    "data": {
+                                                        "body": "from postman 2",
+                                                        "title": "from postman 2",
+                                                        "key_1": "Value for key_1",
+                                                        "key_2": "Value for key_2"
+                                                    }
+                                                })
+                                                    .then(function (ree) {
+                                                        console.log(ree);
+
+                                                    })
+                                                    .catch(function (errc) {
+                                                        console.log(errc);
+
+                                                    });
+
+                                            });
+
+                                            resolve();
+
+
+                                        });
+
+
+                                    });
+
+
 
                                     transporter.sendMail(mailOptions, (err_s, info) => {
                                         if (err_s) {
