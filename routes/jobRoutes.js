@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const pool = require('../pgconex.js');
+const pool = require('../config/config').pool;
 const bcrypt = require("bcrypt");
 const {verifyToken} = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');

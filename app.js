@@ -16,10 +16,10 @@ app.use(express.json());
 app.use(useragent.express());
 
 // Routes
-app.use(require('./routes/users'));
-app.use(require('./routes/jobs'));
-app.use(require('./routes/login'));
-app.use(require('./routes/proposals'));
+app.use(require('./routes/userRoutes'));
+app.use(require('./routes/jobRoutes'));
+app.use(require('./routes/loginRoutes'));
+app.use(require('./routes/proposalRoutes'));
 
 
 

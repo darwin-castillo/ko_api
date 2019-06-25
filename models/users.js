@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const sequelize = require('../config/config');
+const sequelize = require('../config/config').sequelize;
 const User = sequelize.define('klop_users', {
     id: {type: Sequelize.SMALLINT, primaryKey: true},
     name: Sequelize.STRING,
