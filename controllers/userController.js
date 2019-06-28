@@ -61,6 +61,7 @@ module.exports = {
             else {
                 let list = results.rows;
                 let obj = list[0];
+                obj.mara ="chupalo";
 
                 res.status(200).json(obj);
             }
