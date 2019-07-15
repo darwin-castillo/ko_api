@@ -59,7 +59,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     let select = "SELECT    " +
         "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-        "du.name as cleaner, du.id as id_cleaner  COUNT(kp.id_job) as total_proposals " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals " +
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
