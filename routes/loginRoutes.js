@@ -19,7 +19,7 @@ router.post('/api/login', (req, res) => {
 
 
 
-    pool.query("SELECT id,name,surname,email,address,image,verified,password,id_role_fk as role"
+    pool.query("SELECT id,name,surname,email,phone,address,image,verified,password,id_role_fk as role"
         + " FROM klop_users WHERE email='" + username + "'", (error, results) => {
         if (error) {
             console.log("error ", error);
