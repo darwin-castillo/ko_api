@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport(smtpPool({
 const SELECT_JOBS = "SELECT    " +
     "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
     " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-    "du.name as cleaner, du.id as id_cleaner " +
+    "du.name as cleaner, du.id as id_cleaner  " +
     "FROM  public.klop_jobs as jo " +
     "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
     "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
@@ -56,7 +56,17 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         + ' klop_jobs.users_id_autor = klop_users.id  AND klop_job_status.id = klop_jobs.id_status ORDER BY klop_jobs.id desc';
 
      */
-    let select = SELECT_JOBS;
+    let select = "SELECT    " +
+        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
+        " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
+        "du.name as cleaner, du.id as id_cleaner  COUNT(kp.id_job) as total_proposals " +
+        "FROM  public.klop_jobs as jo " +
+        "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
+        "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
+        "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
+        "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
+        "GROUP BY jo.id,st.id,us.id,du.id " +
+        "ORDER BY jo.id";
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
