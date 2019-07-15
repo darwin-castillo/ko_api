@@ -66,13 +66,13 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "GROUP BY jo.id,st.id,us.id,du.id " +
-        "ORDER BY jo.id";
+        "ORDER BY jo.id desc";
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
 
     console.log(select);
-    pool.query(select + ORDER_BY_JOBS, (error, results) => {
+    pool.query(select, (error, results) => {
 
         if (error) {
             return res.status(500).json({status: 500, message: error});
