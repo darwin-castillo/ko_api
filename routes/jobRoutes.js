@@ -65,7 +65,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
-        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id" +
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " +
         "GROUP BY jo.id,st.id,us.id,du.id, ct.id " +
         "ORDER BY jo.id desc";
     if (req.query.cleaner) {
