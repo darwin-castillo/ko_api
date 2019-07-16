@@ -59,13 +59,14 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     let select = "SELECT    " +
         "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category " +
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
-        "GROUP BY jo.id,st.id,us.id,du.id " +
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id" +
+        "GROUP BY jo.id,st.id,us.id,du.id, ct.id " +
         "ORDER BY jo.id desc";
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
