@@ -176,17 +176,18 @@ router.post('/api/jobs', verifyToken, (req, res) => {
         else {
             if (typeof decoded.id !== 'undefined') {
 
-                if (typeof job.title !== 'undefined'
+                if (typeof job.title !== 'undefined' || typeof job.id_category !== 'undefined'
                 ) {
 
 
-                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule, id_status) ' +
+                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule, id_status,id_category) ' +
                         ' VALUES('
                         + "'" + job.title + "',"
                         + "'" + (typeof job.description === 'undefined' ? "N/A" : job.description) + "',"
                         + "" + decoded.id + ","
                         + "'" + (typeof job.date_deadline === 'undefined' ? "N/A" : job.date_deadline) + "',"
-                        + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2"
+                        + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2,"
+                        + "" + job.id_category + ""
                         + ")";
                     //  console.log(query);
 
@@ -230,8 +231,14 @@ router.post('/api/jobs', verifyToken, (req, res) => {
 
 
                 }
-                else {
+                else if (typeof job.title === 'undefined') {
                     res.status(400).json({status: 400, message: "title  is required"});
+                }
+                else if (typeof job.id_category === 'undefined') {
+                    res.status(400).json({status: 400, message: "id_category is required"});
+                }
+                else {
+                    res.status(500).json({status: 500, message: "Server Error"})
                 }
 
             } else {
@@ -274,6 +281,11 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
 
                 if (body.id_valoration) {
                     fields.push("id_valoration=" + body.id_valoration);
+                    somevalue = true;
+                }
+
+                if (body.id_category) {
+                    fields.push("id_category=" + body.id_category);
                     somevalue = true;
                 }
                 fields.push(' date_updated=now()');
