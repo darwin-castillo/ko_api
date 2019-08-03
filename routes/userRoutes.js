@@ -1,3 +1,4 @@
+import {getCurrentUser} from "../controllers/userController";
 
 
 const express = require('express')
