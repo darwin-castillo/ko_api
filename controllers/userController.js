@@ -294,7 +294,7 @@ module.exports = {
                     }
 
                     if (body.surname) {
-                        fields.push("surname=" + body.surname + "'");
+                        fields.push("surname='" + body.surname + "'");
                         somevalue = true;
                         sendToCleaner = true;
                     }
