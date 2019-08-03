@@ -1,10 +1,10 @@
-import {getCurrentUser} from "../controllers/userController";
+
 
 
 const express = require('express')
 const router = express.Router();
 const {verifyToken} = require('../middlewares/auth');
-const {getAllUsers,getUserById,createUser,updateCurrentUser} = require('../controllers/userController');
+const {getAllUsers,getUserById,createUser,updateCurrentUser,getCurrentUser} = require('../controllers/userController');
 
 
 router.get('/api/users/:id', verifyToken,getUserById);
