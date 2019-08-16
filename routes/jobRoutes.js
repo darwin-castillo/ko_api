@@ -28,6 +28,7 @@ const SELECT_JOBS = "SELECT    " +
     "FROM  public.klop_jobs as jo " +
     "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
     "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
+    "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
     "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id ";
 
 const ORDER_BY_JOBS = " ORDER BY jo.id desc";
@@ -59,14 +60,15 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     let select = "SELECT    " +
         "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address " +
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
+        "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
         "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " +
-        "GROUP BY jo.id,st.id,us.id,du.id, ct.id " +
+        "GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
         "ORDER BY jo.id desc";
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
@@ -76,6 +78,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     pool.query(select, (error, results) => {
 
         if (error) {
+            console.log(error);
             return res.status(500).json({status: 500, message: error});
         }
         else {
@@ -180,14 +183,15 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                 ) {
 
 
-                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule, id_status,id_category) ' +
+                    let query = 'INSERT INTO public.klop_jobs(title,description,users_id_autor,date_deadline,date_schedule, id_status,id_category,id_location) ' +
                         ' VALUES('
                         + "'" + job.title + "',"
                         + "'" + (typeof job.description === 'undefined' ? "N/A" : job.description) + "',"
                         + "" + decoded.id + ","
                         + "'" + (typeof job.date_deadline === 'undefined' ? "N/A" : job.date_deadline) + "',"
                         + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2,"
-                        + "" + job.id_category + ""
+                        + "" + job.id_category + ","
+                        + "'" + (typeof job.id_location === 'undefined' ? "N/A" : job.id_location) + "'"
                         + ")";
                     //  console.log(query);
 
@@ -281,6 +285,11 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
 
                 if (body.id_valoration) {
                     fields.push("id_valoration=" + body.id_valoration);
+                    somevalue = true;
+                }
+
+                if (body.id_location) {
+                    fields.push("id_location=" + body.id_location);
                     somevalue = true;
                 }
 
