@@ -21,6 +21,7 @@ app.use(require('./routes/jobRoutes'));
 app.use(require('./routes/loginRoutes'));
 app.use(require('./routes/proposalRoutes'));
 app.use(require('./routes/locationsRoutes'));
+app.use(require('./routes/skillsRoutes'));
 
 
 

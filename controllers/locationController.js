@@ -17,24 +17,25 @@ module.exports = {
         console.log('POST  api/locations');
         console.log('body ', req.body);
         let token = req.get('Authorization');
-        let location = {
+        let aux = {
 
             title: null,
             address: null,
             latitude: null,
             longitude: null,
-            city: null,
-            country: null,
-            street: null,
+            city: "",
+            country: "",
+            street: "",
             phone: null,
             coordinates: null,
-            postcode: null,
-            description: null,
-            references:null,
+            postcode: "",
+            description: "",
+            references: "",
 
 
         };
-        location = req.body;
+        let location = req.body;
+        Object.assign(aux,location);
 
 
         let less = [];
@@ -158,7 +159,6 @@ module.exports = {
             else {
                 console.log(decoded);
                 if (typeof decoded.id !== 'undefined') {
-
 
 
                     let query = 'SELECT * FROM klop_locations WHERE id_user = ' + decoded.id;

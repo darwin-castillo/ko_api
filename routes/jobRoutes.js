@@ -24,18 +24,22 @@ const transporter = nodemailer.createTransport(smtpPool({
 const SELECT_JOBS = "SELECT    " +
     "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
     " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-    "du.name as cleaner, du.id as id_cleaner  " +
+    "du.name as cleaner, du.id as id_cleaner ,  COUNT(kp.id_job) as total_proposals,  " +
+    "json_build_object('title',lc.title, 'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'address',lc.address, 'coordinates',lc.coordinates) as location " +
     "FROM  public.klop_jobs as jo " +
     "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
     "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
     "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
+    "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
     "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id ";
+
 
 const ORDER_BY_JOBS = " ORDER BY jo.id desc";
 
 
 router.get('/api/jobs', verifyToken, (req, res) => {
     console.log('GET JOBS');
+
     /*
         let query = 'SELECT'
         + ' klop_jobs.id,'
@@ -60,7 +64,8 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     let select = "SELECT    " +
         "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address, lc.coordinates, " +
+        "json_build_object('address',lc.address,  'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'coordinates',lc.coordinates) as location " +
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
@@ -82,16 +87,71 @@ router.get('/api/jobs', verifyToken, (req, res) => {
             return res.status(500).json({status: 500, message: error});
         }
         else {
-            let list = results.rows;
-            let obj = {};
-            obj.list = list;
-            obj.count = list.length;
-            res.status(200).json(obj);
+
+            if (req.query.distance) {
+                let origin = req.query.distance;
+                console.log("calcule distance...origin[" + origin + "]");
+                let list = results.rows;
+
+                let destinations = "";
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].coordinates !== null && list[i].coordinates !== 'null') {
+                        // list[i].distance=
+                        destinations = destinations + (destinations.length > 0 ? "|" : "") + list[i].coordinates;
+                    }
+                    else {
+                        destinations = destinations + (destinations.length > 0 ? "|" : "") +"0,0";
+                    }
+
+                }
+                console.log("destinations: " + destinations);
+
+
+                axios.get('https://maps.googleapis.com/maps/api/' +
+                    'distancematrix/json?' +
+                    'units=metric' +
+                    '&origins=' + req.query.distance +
+                    '&destinations=' + destinations +
+                    '&key=AIzaSyAIiXVbt3z9zRyjpAW2-b7eB9JIgWP7PGI').then((respGoogle, reqGoogle) => {
+                    //  console.log(respGoogle.data.rows[0].elements);
+
+                    let arrayElements = respGoogle.data.rows[0].elements;
+                    for (let i = 0; i < arrayElements.length; i++) {
+                        if (typeof arrayElements[i].distance !== "undefined") {
+                            list[i].distance = arrayElements[i].distance.text;
+                        }
+                        else {
+                            list[i].distance = "-1";
+                        }
+                    }
+                    let obj = {};
+                    obj.list = list;
+                    obj.count = list.length;
+                    res.status(200).json(obj);
+
+
+                });
+
+
+            }
+
+
+            else {
+
+                let list = results.rows;
+                let obj = {};
+                obj.list = list;
+                obj.count = list.length;
+                res.status(200).json(obj);
+            }
+
+
         }
     })
 
 
-});
+})
+;
 
 router.get('/api/self/jobs', verifyToken, (req, res) => {
     let token = req.get('Authorization');
@@ -99,13 +159,14 @@ router.get('/api/self/jobs', verifyToken, (req, res) => {
 
     jwt.verify(token, JWT_SEED, (err, decoded) => {
         if (err) {
+            console.log("error  ",err);
             res.status(500).json({error: 500, message: err})
         }
         else {
             if (typeof decoded.id !== 'undefined') {
                 let query = SELECT_JOBS
                     + ' WHERE '
-                    + 'jo.users_id_autor = ' + decoded.id + ORDER_BY_JOBS;
+                    + 'jo.users_id_autor = ' + decoded.id + " GROUP BY jo.id,st.id,us.id,du.id, lc.id " + ORDER_BY_JOBS ;
                 console.log(query);
                 pool.query(/*'SELECT'
                     + ' klop_jobs.id,'
