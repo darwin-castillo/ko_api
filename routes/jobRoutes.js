@@ -128,7 +128,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                         }
                     }
                     let obj = {};
-                    obj.orgin_address = originAddress;
+                    obj.origin_address = originAddress;
                     obj.list = list;
                     obj.count = list.length;
                     res.status(200).json(obj);
