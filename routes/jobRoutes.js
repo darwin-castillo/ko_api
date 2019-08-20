@@ -116,6 +116,9 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                     //  console.log(respGoogle.data.rows[0].elements);
 
                     let arrayElements = respGoogle.data.rows[0].elements;
+                    let originAddress = respGoogle.data.origin_addresses[0];
+
+
                     for (let i = 0; i < arrayElements.length; i++) {
                         if (typeof arrayElements[i].distance !== "undefined") {
                             list[i].distance = arrayElements[i].distance.text;
@@ -125,6 +128,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                         }
                     }
                     let obj = {};
+                    obj.orgin_address = originAddress;
                     obj.list = list;
                     obj.count = list.length;
                     res.status(200).json(obj);
