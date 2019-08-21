@@ -22,6 +22,7 @@ app.use(require('./routes/loginRoutes'));
 app.use(require('./routes/proposalRoutes'));
 app.use(require('./routes/locationsRoutes'));
 app.use(require('./routes/skillsRoutes'));
+app.use(require('./routes/htmlRoutes'));
 
 
 

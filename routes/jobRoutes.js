@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const smtpPool = require('nodemailer-smtp-pool');
 const axios = require('axios');
+const { parse } = require('querystring');
 
 
 const nodemailer = require('nodemailer');
@@ -156,6 +157,9 @@ router.get('/api/jobs', verifyToken, (req, res) => {
 
 })
 ;
+
+
+
 
 router.get('/api/self/jobs', verifyToken, (req, res) => {
     let token = req.get('Authorization');

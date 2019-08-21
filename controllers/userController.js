@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const {verifyToken} = require('../middlewares/auth');
+const generator = require('generate-password');
 
 module.exports = {
 
@@ -91,7 +92,7 @@ module.exports = {
             else {
                 console.log(decoded);
                 if (typeof decoded.id !== 'undefined') {
-                    let idUser= decoded.id;
+                    let idUser = decoded.id;
 
                     let query = 'SELECT  ' +
                         'u.id,u.name,u.surname,u.email,' +
@@ -370,6 +371,109 @@ module.exports = {
                     res.status(500).json({error: 500, message: "this token not contains id, login again to get"})
                 }
             }
+        });
+
+
+    },
+
+
+    sendEmail: (req, res) => {
+        console.log("send password");
+        let fs = require('fs');
+
+
+        let nodemailer = require('nodemailer');
+
+        let query = 'SELECT  ' +
+            '  id,name,surname,email ' +
+            '          FROM public.klop_users  WHERE email=\'' + req.params.email + '\'';
+        fs.readFile('./html/index.html', function (err, html_file) {
+            if (err) {
+                throw err;
+            }
+            //  res.writeHeader(200, {"Content-Type": "text/html"});
+            //   res.write(html);
+            // res.end();
+
+
+            pool.query(query, (error, results) => {
+                    if (error) {
+                        return res.status(500).json({status: 500, message: error});
+                    }
+
+                    else {
+
+
+                        let password = generator.generate({
+                            length: 10,
+                            numbers: true
+                        });
+
+                        let name = results.rows[0].name;
+                        let id = results.rows[0].id;
+                        let mailOptions = {
+                            from: 'darwin.c5@gmail.com',
+                            to: '' + req.params.email,
+                            subject: 'Reset Password KleanOps ',//+ results.rows[0].name,
+                            // text: 'That was easy!'
+                            html: '<h1>Hello ' + name + ' </h1><p>kleanops system informs you, Now this is your new password:  </p><strong>' + password + '</strong>',
+                        };
+
+
+                        let transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: 'darwin.c5@gmail.com',
+                                pass: 'jeda090301014'
+                            }
+                        });
+
+                        transporter.sendMail(mailOptions, function (errors, info) {
+                            if (errors) {
+                                console.log(errors);
+                            } else {
+                                console.log('Email sent [' + name + ']: ' + info.response);
+                                //  res.status(200).json({status: 200, message: "email send!"});
+
+                                bcrypt.hash(password, 4, (errhash, hash) => {
+                                    console.log("hash password ", hash);
+
+                                    let update = 'UPDATE klop_users    SET password=\'' + hash + '\'  WHERE id=' + id;
+                                    pool.query(update
+                                        , (error2, results2) => {
+                                            console.log(update);
+                                            if (error2) {
+                                                res.status(500).json({status: 500, message: "Error", error: error2});
+                                            }
+                                            else {
+                                                res.status(200).json({status: 200, message: "email send!"});
+                                            }
+
+                                        });
+                                });
+
+                            }
+                        });
+
+
+                        /*
+                                        fs.readFile('./html/index.html', function (err, html) {
+                                            if (err) {
+                                                throw err;
+                                            }
+                                            res.writeHeader(200, {"Content-Type": "text/html"});
+                                            res.write(html);
+                                            res.end();
+                                        });
+
+                        */
+
+
+                    }
+
+
+                }
+            );
         });
 
 
