@@ -18,7 +18,6 @@ router.post('/api/login', (req, res) => {
     let user_agent = req.useragent.source;
 
 
-
     pool.query("SELECT id,name,surname,email,phone,address,image,verified,password,id_role_fk as role"
         + " FROM klop_users WHERE email='" + username + "'", (error, results) => {
         if (error) {
@@ -66,16 +65,16 @@ router.post('/api/login', (req, res) => {
                     delete obj_resp.user.password;
                     obj_resp.status = 200;
 
-                    console.log("fcm ",fcm);
+                    console.log("fcm ", fcm);
 
-let token_query = "INSERT INTO public.klop_users_tokens(id_user,token,date_created,active,fcm_token,user_agent)  \n" +
-    "  VALUES(" + user.id + ",'" + obj_resp.token + "',now(),true,"+(typeof fcm==='undefined'?"NULL":"'"+fcm+"'")+",'"+user_agent+"')";
-console.log(token_query)
+                    let token_query = "INSERT INTO public.klop_users_tokens(id_user,token,date_created,active,fcm_token,user_agent)  \n" +
+                        "  VALUES(" + user.id + ",'" + obj_resp.token + "',now(),true," + (typeof fcm === 'undefined' ? "NULL" : "'" + fcm + "'") + ",'" + user_agent + "')";
+                    console.log(token_query)
                     pool.query(token_query
 
                         , (errr, results) => {
                             console.log("token process");
-                            console.log("error-> ",errr);
+                            console.log("error-> ", errr);
                             console.log(results);
                             res.status(200).json(obj_resp);
 

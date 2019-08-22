@@ -409,6 +409,8 @@ module.exports = {
                             numbers: true
                         });
 
+                        if(results.rows.length>0){
+
                         let name = results.rows[0].name;
                         let id = results.rows[0].id;
                         let mailOptions = {
@@ -474,7 +476,10 @@ module.exports = {
 
                         */
 
-
+                    }
+                    else{
+                            res.status(500).json({status: 500, message: "user not found"});
+                        }
                     }
 
 
