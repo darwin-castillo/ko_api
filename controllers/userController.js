@@ -421,10 +421,16 @@ module.exports = {
 
 
                         let transporter = nodemailer.createTransport({
-                            host: 'http://mail.zippyttech.com:2095',
+                            host: 'smtp.gmail.com',
+                            port: 465,
+                            secure: true,
                             auth: {
-                                user: 'castillod@zippyttech.com',
-                                pass: 'jeda1204.'
+                                user: 'darwin.c5@gmail.com', // Your email id
+                                pass: 'jeda090301014' // Your password
+                            },
+                            tls: {
+                                // do not fail on invalid certs
+                                rejectUnauthorized: false
                             }
                         });
 
