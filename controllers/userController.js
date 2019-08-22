@@ -421,10 +421,11 @@ module.exports = {
 
 
                         let transporter = nodemailer.createTransport({
-                            service: 'yahoo',
+                            service: 'gmail',
+                            secure: true,
                             auth: {
-                                user: 'kleanops@yahoo.com',
-                                pass: 'ko123456.'
+                                user: 'darwin.c5@gmail.com',
+                                pass: 'jeda090301014'
                             }
                         });
 
