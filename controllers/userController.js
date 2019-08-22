@@ -294,6 +294,7 @@ module.exports = {
                         somevalue = true;
                     }
 
+
                     if (body.surname) {
                         fields.push("surname='" + body.surname + "'");
                         somevalue = true;
@@ -338,34 +339,80 @@ module.exports = {
                         fields.push("description='" + body.description + "'");
                         somevalue = true;
                     }
-                    fields.push(' date_updated=now()');
 
-                    query = query + fields.join(',') + " WHERE id=" + decoded.id
-                    console.log("PUT JOB ", query);
 
-                    if (somevalue) {
-                        pool.query(query, (error, results) => {
-                            console.log(results);
-                            if (error) {
-                                console.log("error ", error);
-                                res.status(500).json({
-                                    status: 500,
-                                    message: error
+                    if (body.password) {
+                        bcrypt.hash(body.password, 4, (err, hash) => {
+                            fields.push("password='" + hash + "'");
+                            somevalue = true;
+
+
+                            fields.push(' date_updated=now()');
+
+                            query = query + fields.join(',') + " WHERE id=" + decoded.id
+                            console.log("PUT JOB ", query);
+
+                            if (somevalue) {
+                                pool.query(query, (error, results) => {
+                                    console.log(results);
+                                    if (error) {
+                                        console.log("error ", error);
+                                        res.status(500).json({
+                                            status: 500,
+                                            message: error
+                                        });
+                                    }
+                                    else {
+                                        res.status(200).json({status: 200, message: "user is updated!"});
+
+
+                                    }
                                 });
                             }
                             else {
-                                res.status(200).json({status: 200, message: "user is updated!"});
-
-
+                                res.status(400).json({
+                                    status: 400,
+                                    message: ' Not valid update'
+                                })
                             }
+
+
+
                         });
+
+                    } else {
+
+                        fields.push(' date_updated=now()');
+
+                        query = query + fields.join(',') + " WHERE id=" + decoded.id
+                        console.log("PUT JOB ", query);
+
+                        if (somevalue) {
+                            pool.query(query, (error, results) => {
+                                console.log(results);
+                                if (error) {
+                                    console.log("error ", error);
+                                    res.status(500).json({
+                                        status: 500,
+                                        message: error
+                                    });
+                                }
+                                else {
+                                    res.status(200).json({status: 200, message: "user is updated!"});
+
+
+                                }
+                            });
+                        }
+                        else {
+                            res.status(400).json({
+                                status: 400,
+                                message: ' Not valid update'
+                            })
+                        }
+
                     }
-                    else {
-                        res.status(400).json({
-                            status: 400,
-                            message: ' Not valid update'
-                        })
-                    }
+
                 }
                 else {
                     res.status(500).json({error: 500, message: "this token not contains id, login again to get"})
@@ -409,75 +456,75 @@ module.exports = {
                             numbers: true
                         });
 
-                        if(results.rows.length>0){
+                        if (results.rows.length > 0) {
 
-                        let name = results.rows[0].name;
-                        let id = results.rows[0].id;
-                        let mailOptions = {
-                            from: 'darwin.c5@gmail.com',
-                            to: '' + req.params.email,
-                            subject: 'Reset Password KleanOps ',//+ results.rows[0].name,
-                            // text: 'That was easy!'
-                            html: '<h1>Hello ' + name + ' </h1><p>kleanops system informs you, Now this is your new password:  </p><strong>' + password + '</strong>',
-                        };
-
-
-                        let transporter = nodemailer.createTransport({
-                            host: 'smtp.gmail.com',
-                            port: 465,
-                            secure: true,
-                            auth: {
-                                user: 'kleanops.notifications@gmail.com', // Your email id
-                                pass: 'Ko123456.' // Your password
-                            },
-                            tls: {
-                                // do not fail on invalid certs
-                                rejectUnauthorized: false
-                            }
-                        });
-
-                        transporter.sendMail(mailOptions, function (errors, info) {
-                            if (errors) {
-                                console.log(errors);
-                            } else {
-                                console.log('Email sent [' + name + ']: ' + info.response);
-                                //  res.status(200).json({status: 200, message: "email send!"});
-
-                                bcrypt.hash(password, 4, (errhash, hash) => {
-                                    console.log("hash password ", hash);
-
-                                    let update = 'UPDATE klop_users    SET password=\'' + hash + '\'  WHERE id=' + id;
-                                    pool.query(update
-                                        , (error2, results2) => {
-                                            console.log(update);
-                                            if (error2) {
-                                                res.status(500).json({status: 500, message: "Error", error: error2});
-                                            }
-                                            else {
-                                                res.status(200).json({status: 200, message: "email send!"});
-                                            }
-
-                                        });
-                                });
-
-                            }
-                        });
+                            let name = results.rows[0].name;
+                            let id = results.rows[0].id;
+                            let mailOptions = {
+                                from: 'darwin.c5@gmail.com',
+                                to: '' + req.params.email,
+                                subject: 'Reset Password KleanOps ',//+ results.rows[0].name,
+                                // text: 'That was easy!'
+                                html: '<h1>Hello ' + name + ' </h1><p>kleanops system informs you, Now this is your new password:  </p><strong>' + password + '</strong>',
+                            };
 
 
-                        /*
-                                        fs.readFile('./html/index.html', function (err, html) {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                            res.writeHeader(200, {"Content-Type": "text/html"});
-                                            res.write(html);
-                                            res.end();
-                                        });
+                            let transporter = nodemailer.createTransport({
+                                host: 'smtp.gmail.com',
+                                port: 465,
+                                secure: true,
+                                auth: {
+                                    user: 'kleanops.notifications@gmail.com', // Your email id
+                                    pass: 'Ko123456.' // Your password
+                                },
+                                tls: {
+                                    // do not fail on invalid certs
+                                    rejectUnauthorized: false
+                                }
+                            });
 
-                        */
+                            transporter.sendMail(mailOptions, function (errors, info) {
+                                if (errors) {
+                                    console.log(errors);
+                                } else {
+                                    console.log('Email sent [' + name + ']: ' + info.response);
+                                    //  res.status(200).json({status: 200, message: "email send!"});
 
-                    }
-                    else{
+                                    bcrypt.hash(password, 4, (errhash, hash) => {
+                                        console.log("hash password ", hash);
+
+                                        let update = 'UPDATE klop_users    SET password=\'' + hash + '\'  WHERE id=' + id;
+                                        pool.query(update
+                                            , (error2, results2) => {
+                                                console.log(update);
+                                                if (error2) {
+                                                    res.status(500).json({status: 500, message: "Error", error: error2});
+                                                }
+                                                else {
+                                                    res.status(200).json({status: 200, message: "email send!"});
+                                                }
+
+                                            });
+                                    });
+
+                                }
+                            });
+
+
+                            /*
+                                            fs.readFile('./html/index.html', function (err, html) {
+                                                if (err) {
+                                                    throw err;
+                                                }
+                                                res.writeHeader(200, {"Content-Type": "text/html"});
+                                                res.write(html);
+                                                res.end();
+                                            });
+
+                            */
+
+                        }
+                        else {
                             res.status(404).json({status: 404, message: "user not found"});
                         }
                     }
