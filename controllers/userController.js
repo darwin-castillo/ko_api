@@ -478,7 +478,7 @@ module.exports = {
 
                     }
                     else{
-                            res.status(500).json({status: 500, message: "user not found"});
+                            res.status(500).json({status: 404, message: "user not found"});
                         }
                     }
 
