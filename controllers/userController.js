@@ -425,8 +425,8 @@ module.exports = {
                             port: 465,
                             secure: true,
                             auth: {
-                                user: 'darwin.c5@gmail.com', // Your email id
-                                pass: 'jeda090301014' // Your password
+                                user: 'kleanops.notifications@gmail.com', // Your email id
+                                pass: 'Ko123456.' // Your password
                             },
                             tls: {
                                 // do not fail on invalid certs
