@@ -19,6 +19,7 @@ router.get('/api/user/resetpassword/send/:email',sendEmail);
 
 
 
+
 router.post('/api/jobstest',(req,res)=>{
     //console.log(req.body.password1);
 

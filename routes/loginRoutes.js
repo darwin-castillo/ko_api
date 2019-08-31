@@ -6,6 +6,7 @@ const pool = require('../config/config').pool;
 const bcrypt = require("bcrypt");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const JWT_CADUCITY = require("../config/sets").JWT_CADUCITY;
+
 const User = require('../models/users');
 //app.use(bodyParser.urlencoded({extended: false}))
 //app.use(bodyParser.json({limit:'10mb'}))
@@ -43,6 +44,7 @@ router.post('/api/login', (req, res) => {
                     return;
                 }
                 else {
+
 
                     let tokenData = {
                         id: user.id,

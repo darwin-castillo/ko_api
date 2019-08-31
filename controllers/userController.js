@@ -222,10 +222,12 @@ module.exports = {
                         let list = results.rows;
                         let obj = {};
                         obj.list = list;
-                        obj.count = list.length;
-                        res.status(201).json({status: 201, message: "Successfully registered user!"});
+                      //  obj.count = list.length;
+                        res.status(201).json({status: 201, message: "Successfully registered user!",obj:results});
                     }
                 });
+
+
 
             });
 
