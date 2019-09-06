@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const smtpPool = require('nodemailer-smtp-pool');
 const axios = require('axios');
-const { parse } = require('querystring');
+const {parse} = require('querystring');
 
 
 const nodemailer = require('nodemailer');
@@ -40,6 +40,27 @@ const ORDER_BY_JOBS = " ORDER BY jo.id desc";
 
 router.get('/api/jobs', verifyToken, (req, res) => {
     console.log('GET JOBS');
+/*
+    let whereUrl = JSON.parse(req.query.where);
+    let whereSentence = "";
+    whereUrl.forEach((value, index) => {
+        let op = "=";
+        if (value[1] === "lt") {
+            op = "<";
+        }
+        else if (value[1] === "gt") {
+            op = ">";
+        }
+
+
+        whereSentence = whereSentence + " " + value[0] + op + "'"+value[2]+"' ";
+        whereSentence = whereSentence +( (value.length > 3) ? value[3] : "");
+    });  */
+
+    //console.log(whereSentence);
+
+    // console.log("where first",whereSentence[0]);
+
 
     /*
         let query = 'SELECT'
@@ -73,12 +94,15 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
-        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " +
-        "GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
-        "ORDER BY jo.id desc";
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " ;
+
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
+
+    select+= " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
+        "ORDER BY jo.id desc";
+
 
     console.log(select);
     pool.query(select, (error, results) => {
@@ -101,7 +125,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                         destinations = destinations + (destinations.length > 0 ? "|" : "") + list[i].coordinates;
                     }
                     else {
-                        destinations = destinations + (destinations.length > 0 ? "|" : "") +"0,0";
+                        destinations = destinations + (destinations.length > 0 ? "|" : "") + "0,0";
                     }
 
                 }
@@ -159,22 +183,20 @@ router.get('/api/jobs', verifyToken, (req, res) => {
 ;
 
 
-
-
 router.get('/api/self/jobs', verifyToken, (req, res) => {
     let token = req.get('Authorization');
 
 
     jwt.verify(token, JWT_SEED, (err, decoded) => {
         if (err) {
-            console.log("error  ",err);
+            console.log("error  ", err);
             res.status(500).json({error: 500, message: err})
         }
         else {
             if (typeof decoded.id !== 'undefined') {
                 let query = SELECT_JOBS
                     + ' WHERE '
-                    + 'jo.users_id_autor = ' + decoded.id + " GROUP BY jo.id,st.id,us.id,du.id, lc.id " + ORDER_BY_JOBS ;
+                    + 'jo.users_id_autor = ' + decoded.id + " GROUP BY jo.id,st.id,us.id,du.id, lc.id " + ORDER_BY_JOBS;
                 console.log(query);
                 pool.query(/*'SELECT'
                     + ' klop_jobs.id,'
@@ -385,75 +407,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
 
                             if (sendToCleaner) {
                                 pool.query(SELECT_JOBS + " WHERE jo.id=" + req.params.id, (er, rest) => {
-
-                                    let mailOptions = {
-                                        from: 'darwin.c5@gmail.com',
-                                        to: rest.rows[0].email_cleaner,
-                                        subject: 'Job Accepted',
-                                        text: 'A job you applied for has been accepted\n Id Job: ' + req.params.id +
-                                        '\n Client: ' + rest.rows[0].autor + "\n Job: " + rest.rows[0].title + rest.rows[0].description
-                                    };
-
-                                    transporter.sendMail(mailOptions, (err_s, info) => {
-                                        if (err_s) {
-                                            console.log(err_s);
-                                        } else {
-                                            console.log('Email sent: ' + info.response);
-                                        }
-                                    });
-
-                                    /*
-                                       let sendNotification = new Promise((resolve, reject)=>{
-
-                                           pool.query("select fcm_token from klop_users_tokens",(tok_err,tok_res)=>{
-
-                                               let list = tok_res.rows;
-                                               let i =0;
-
-                                               list.forEach( (item)=> {
-                                                       i++;
-                                                 axios({
-                                                       method: 'post',
-                                                       url: 'https://fcm.googleapis.com/fcm/send',
-                                                       data:  {
-                                                           "to": item.fcm_token,
-
-                                                           "collapse_key": "type_a",
-                                                           "notification": {
-                                                               "body": "test kleanops "+i,
-                                                               "title": "kleanops"
-                                                           },
-                                                           "data": {
-                                                               "body": "from postman 2",
-                                                               "title": "from postman 2",
-                                                               "key_1": "Value for key_1",
-                                                               "key_2": "Value for key_2"
-                                                           }
-                                                       },
-                                                       config: { headers: {"Authorization": "key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl",
-                                                       "Content-Type":"application/json"}}
-                                                   })
-
-                                                       .then(function (ree) {
-                                                           console.log(ree);
-
-                                                       })
-                                                       .catch(function (errc) {
-                                                           console.log(errc);
-
-                                                       });
-
-                                               });
-
-                                               resolve();
-
-
-                                           });
-
-
-                                       });
-   */
-
+                                    //todo: send notifications via email and push
 
                                     res.status(200).json({status: 200, message: "job is updated!"});
                                 });

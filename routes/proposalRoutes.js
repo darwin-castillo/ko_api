@@ -40,32 +40,58 @@ const JWT_SEED = require("../config/sets").JWT_SEED;
  */
 
 
-let queryProposals = 'SELECT \n' +
+/*let queryProposals = 'SELECT \n' +
     'u.name as proposer,\n' +
     'u.id as id_proposer,\n' +
     'p.date_created as date_created, \n' +
     'j.id as id_job, \n' +
     'uu.name as posted_by,\n' +
+    'j.id_location,\n' +
     'uu.id as id_posted_by,\n' +
     'p.comment as comments\n' +
     '\tFROM klop_users u, klop_proposal p, klop_jobs j, klop_users uu\n' +
     '\t\n' +
     'WHERE u.id = p.id_user \n' +
     'AND p.id_job = j.id\n' +
-    'AND j.users_id_autor = uu.id';
+    'AND j.users_id_autor = uu.id '
+
+*/
+
+let queryProposals = "SELECT \n" +
+    "u.name as proposer,\n" +
+    "u.id as id_proposer,\n" +
+    "p.date_created as date_created, \n" +
+    "j.id as id_job, \n" +
+    "uu.name as posted_by,\n" +
+    "uu.id as id_posted_by,\n" +
+    "lc.address as location,\n" +
+    "j.description as description,\n" +
+    "j.title as title,\n" +
+    "j.id_status,\n" +
+    "j.users_id_cleaner as id_cleaner,\n" +
+    "p.comment as comments\n" +
+    "        FROM  klop_proposal p\n" +
+    "\t\tINNER JOIN klop_jobs  AS j ON  j.id=p.id_job \n" +
+    "        LEFT OUTER JOIN klop_locations as lc on lc.id=j.id_location\n" +
+    "\t\tINNER JOIN klop_users as u on u.id = p.id_user \t\n" +
+    "\t\tINNER JOIN klop_users  as uu on uu.id =j.users_id_autor \n";
+// "\t\tWHERE  u.id='43';"
+;
 
 router.get('/api/proposals', verifyToken, (req, res) => {
-    console.log('GET PROPOSALS ');
+    console.log('GET PROPOSALS ', queryProposals);
     console.log('req.query.id  ', req.query.j);
 
     let query = queryProposals;
 
-
+    let flag = false;
     if (req.query.j) {
-        query += ' AND j.id=' + req.query.j;
+        query += 'WHERE j.id=' + req.query.j;
+        flag = true;
+
     }
     if (req.query.u) {
-        query += ' AND u.id=' + req.query.u;
+        query += ((flag) ? " AND " : " WHERE ") + ' u.id=' + req.query.u;
     }
 
     pool.query(query, (error, results) => {
@@ -84,9 +110,44 @@ router.get('/api/proposals', verifyToken, (req, res) => {
 });
 
 
+router.get('/api/self/proposals', verifyToken, (req, res) => {
+    console.log('GET PROPOSALS ', queryProposals);
+    let token = req.get('Authorization');
+
+
+    let query = queryProposals;
+    let flag = false;
+
+    jwt.verify(token, JWT_SEED, (err, decoded) => {
+
+        if (err) {
+            res.status(400).json({status: 400, message: error});
+        }
+        else {
+                query += " AND  u.id=" + decoded.id;
+
+            pool.query(query, (error, results) => {
+                if (error) {
+                    return res.status(500).json({status: 500, message: error});
+                }
+                else {
+                    let list = results.rows;
+                    let obj = {};
+                    obj.list = list;
+                    obj.count = list.length;
+                    res.status(200).json(obj);
+                }
+            })
+        }
+    });
+
+});
+
+
 router.get('/api/proposals/:id', verifyToken, (req, res) => {
     console.log('GET JOBS ');
     console.log('req.query.id  ', req.params.id);
+
 
     let query = queryProposals + " AND p.id_job = " + req.params.id;
 
@@ -187,23 +248,22 @@ WHERE
 
 
                 let query = "UPDATE klop_proposal SET  "
-                    + " status=" + req.body.status +", date_updated='now()' "
+                    + " status=" + req.body.status + ", date_updated='now()' "
                     + " WHERE id_job=" + req.params.id
                     + " AND id_user=" + decoded.id;
                 console.log("PUT PROPOSAL ", query);
 
                 pool.query(query, (error, results) => {
-                   if(error) {
-                       res.status(500).json({
-                           status: 500,
-                           message: error
-                       });
-                   }
-                   else{
-                       res.status(200).json({status:200, message:"proposal is updated!"});
-                   }
+                    if (error) {
+                        res.status(500).json({
+                            status: 500,
+                            message: error
+                        });
+                    }
+                    else {
+                        res.status(200).json({status: 200, message: "proposal is updated!"});
+                    }
                 });
-
 
 
             }
