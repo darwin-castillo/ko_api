@@ -64,6 +64,8 @@ let queryProposals = "SELECT \n" +
     "j.id as id_job, \n" +
     "uu.name as posted_by,\n" +
     "uu.id as id_posted_by,\n" +
+    "uu.phone as contact_phone,\n" +
+    "uu.email as contact_email,\n" +
     "lc.address as location,\n" +
     "j.description as description,\n" +
     "j.title as title,\n" +

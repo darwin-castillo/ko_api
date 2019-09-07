@@ -237,23 +237,48 @@ router.get('/api/self/jobs', verifyToken, (req, res) => {
 router.get('/api/jobs/:id', verifyToken, (req, res) => {
     console.log('GET JOBS BY id= ', req.params.id);
 
-    let id = req.params.id;
+    let select = "SELECT    " +
+        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
+        "json_build_object('phone',us.phone,  'email',us.email) as contact ," +
+        " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, ct.id as id_category, lc.address, lc.coordinates, " +
+        "json_build_object('address',lc.address,  'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'coordinates',lc.coordinates) as location " +
 
-    pool.query(
-        SELECT_JOBS
-        + ' WHERE'
-        + ' jo.id=' + id + ORDER_BY_JOBS, (error, results) => {
-            if (error) {
-                return res.status(500).json({status: 500, message: error});
-            }
-            else {
+        "FROM  public.klop_jobs as jo " +
+        "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
+        "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
+        "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
+        "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
+        "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id "+
+        " WHERE jo.id=" + req.params.id;
+    ;
+
+
+
+    select+= " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
+        "ORDER BY jo.id desc";
+
+
+    console.log(select);
+    pool.query(select, (error, results) => {
+
+        if (error) {
+            console.log(error);
+            return res.status(500).json({status: 500, message: error});
+        }
+        else {
+
+
                 let list = results.rows;
                 let obj = list[0];
-                //obj.list = [];
-                //obj.count = list.length;
                 res.status(200).json(obj);
-            }
-        })
+
+
+
+        }
+    })
+
 
 
 });
