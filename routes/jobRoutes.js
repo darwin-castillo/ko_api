@@ -345,7 +345,34 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                             let obj = {};
                             obj.list = list;
                             obj.count = list.length;
-                            res.status(201).json({status: 201, message: "Successfully registered job!"});
+
+                            axios.post('https://fcm.googleapis.com/fcm/send', {
+                                "to":"/topics/cleaners",
+                                "collapse_key": "type_a",
+                                "priority":"high",
+                                "content_available":true,
+                                "notification": {
+                                    "body": "New Job posted :"+job.title,
+                                    "title": "Kleanops"
+                                },
+                                "data": {
+                                    "body": "New Job posted :"+job.title ,
+                                    "title": "Kleanops"
+
+
+                                }
+                            }, {
+                                headers: {
+                                    'Authorization':'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl'
+                                }
+                            })
+                                .then((response) => {
+                                    res.status(201).json({status: 201, message: "Successfully registered job!"});
+                                })
+                                .catch((error) => {
+                                    res.status(201).json({status: 201, message: "Successfully registered job, But not produce notification"});
+                                })
+
                         }
                     });
 
