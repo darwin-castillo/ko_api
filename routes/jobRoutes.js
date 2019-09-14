@@ -40,22 +40,22 @@ const ORDER_BY_JOBS = " ORDER BY jo.id desc";
 
 router.get('/api/jobs', verifyToken, (req, res) => {
     console.log('GET JOBS');
-/*
-    let whereUrl = JSON.parse(req.query.where);
-    let whereSentence = "";
-    whereUrl.forEach((value, index) => {
-        let op = "=";
-        if (value[1] === "lt") {
-            op = "<";
-        }
-        else if (value[1] === "gt") {
-            op = ">";
-        }
+    /*
+        let whereUrl = JSON.parse(req.query.where);
+        let whereSentence = "";
+        whereUrl.forEach((value, index) => {
+            let op = "=";
+            if (value[1] === "lt") {
+                op = "<";
+            }
+            else if (value[1] === "gt") {
+                op = ">";
+            }
 
 
-        whereSentence = whereSentence + " " + value[0] + op + "'"+value[2]+"' ";
-        whereSentence = whereSentence +( (value.length > 3) ? value[3] : "");
-    });  */
+            whereSentence = whereSentence + " " + value[0] + op + "'"+value[2]+"' ";
+            whereSentence = whereSentence +( (value.length > 3) ? value[3] : "");
+        });  */
 
     //console.log(whereSentence);
 
@@ -94,13 +94,13 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
-        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " ;
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id ";
 
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
 
-    select+= " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
+    select += " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
         "ORDER BY jo.id desc";
 
 
@@ -250,13 +250,12 @@ router.get('/api/jobs/:id', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_job_status as st on jo.id_status = st.id " +
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
-        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id "+
+        "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id " +
         " WHERE jo.id=" + req.params.id;
     ;
 
 
-
-    select+= " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
+    select += " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
         "ORDER BY jo.id desc";
 
 
@@ -270,15 +269,13 @@ router.get('/api/jobs/:id', verifyToken, (req, res) => {
         else {
 
 
-                let list = results.rows;
-                let obj = list[0];
-                res.status(200).json(obj);
-
+            let list = results.rows;
+            let obj = list[0];
+            res.status(200).json(obj);
 
 
         }
     })
-
 
 
 });
@@ -347,30 +344,31 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                             obj.count = list.length;
 
                             axios.post('https://fcm.googleapis.com/fcm/send', {
-                                "to":"/topics/cleaners",
+                                "to": "/topics/cleaners",
                                 "collapse_key": "type_a",
-                                "priority":"high",
-                                "content_available":true,
+                                "priority": "high",
+                                "content_available": true,
                                 "notification": {
-                                    "body": "New Job posted :"+job.title,
+                                    "body": "New Job posted :" + job.title,
                                     "title": "Kleanops"
                                 },
                                 "data": {
-                                    "body": "New Job posted :"+job.title ,
+                                    "body": "New Job posted :" + job.title,
                                     "title": "Kleanops"
-
-
                                 }
                             }, {
                                 headers: {
-                                    'Authorization':'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl'
+                                    'Authorization': 'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl'
                                 }
                             })
                                 .then((response) => {
                                     res.status(201).json({status: 201, message: "Successfully registered job!"});
                                 })
                                 .catch((error) => {
-                                    res.status(201).json({status: 201, message: "Successfully registered job, But not produce notification"});
+                                    res.status(201).json({
+                                        status: 201,
+                                        message: "Successfully registered job, But not produce notification"
+                                    });
                                 })
 
                         }

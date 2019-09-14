@@ -342,6 +342,12 @@ module.exports = {
                         somevalue = true;
                     }
 
+                    if (body.payment) {
+                        console.log("payment  ",body)
+                        fields.push("payment=" + body.payment + "");
+                        somevalue = true;
+                    }
+
 
                     if (body.password) {
                         bcrypt.hash(body.password, 4, (err, hash) => {

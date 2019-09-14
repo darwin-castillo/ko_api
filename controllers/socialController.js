@@ -20,12 +20,14 @@ module.exports = {
     socialAuth: (req, res) => {
         let body = req.body;
         let user_agent = req.useragent.source;
-        admin.auth().verifyIdToken(body.firebase_token)
+        admin.auth().verifyIdToken(body.id_token)
             .then(function (decodedToken) {
+                console.log("token decoded ",decodedToken);
                 let uid = decodedToken.uid;
                 let name = decodedToken.name;
                 let email = decodedToken.email;
                 let image = decodedToken.picture;
+              let fcm_token = body.fcm_token;
 
 
 
@@ -43,12 +45,12 @@ module.exports = {
                     + "'" + image + "'" + ','
                     + "''" + ','
                     + "''" + ','
-                    + "3,"
+                    + "4,"
                     + "'" + Math.floor(new Date() / 1000) + "',true"
                     + ')';
 
 
-                let select = "SELECT * FROM klop_users WHERE email='" + email + "'";
+                let select = "SELECT id,name,surname,email,phone,address,image,verified,password,id_role_fk as role FROM klop_users WHERE email='" + email + "'";
 
                 pool.query(select, (errorSelect, resultsSelect) => {
 
@@ -66,7 +68,8 @@ module.exports = {
                                 }
                                 else {
 
-                                    let select_resp = resultsSelect[1].rows[0];
+                                   console.log(resultsInsert[1]);
+                                    let select_resp = resultsInsert[1].rows[0];
                                     let tokenData = {
                                         id: select_resp.id,
                                         username: select_resp.name,
@@ -88,7 +91,8 @@ module.exports = {
                                     userResp.phone = '';
                                     userResp.address = '';
                                     userResp.image = image;
-                                    userResp.role = 3;
+                                    userResp.role = 4;
+                                    userResp.verified=true;
 
 
                                     let objResp = {};
@@ -98,20 +102,28 @@ module.exports = {
                                     objResp.status = 201;
                                     objResp.message = "User created and logged!";
 
-                                    let fcm = body.firebase_token;
 
                                     let token_query = "INSERT INTO public.klop_users_tokens(id_user,token,date_created,active,fcm_token,user_agent)  \n" +
-                                        "  VALUES(" + select_resp.id + ",'" + token + "',now(),true," + (typeof fcm === 'undefined' ? "NULL" : "'" + fcm + "'") + ",'" + user_agent + "')";
+                                        "  VALUES(" + select_resp.id + ",'" + token + "',now(),true," + (typeof fcm_token === 'undefined' ? "NULL" : "'" + fcm_token + "'") + ",'" + user_agent + "')";
 
 
                                     console.log(token_query)
                                     pool.query(token_query
 
                                         , (errrToken, resultsToken) => {
-                                            console.log("token process");
+
+
+                                        console.log("token process");
                                             console.log("error-> ", errrToken);
-                                            console.log(resultsToken);
-                                            res.status(200).json(objResp);
+                                          if(errrToken){
+                                              console.log("user saved with errors");
+                                              res.status(201).json(objResp);
+                                          }
+                                          else {
+                                              console.log(resultsToken);
+                                              console.log("user saved");
+                                              res.status(201).json(objResp);
+                                          }
 
                                         });
 
@@ -121,7 +133,7 @@ module.exports = {
                             });
 
 
-                            res.status(200).json({message: resultsSelect});
+                           // res.status(200).json({message: resultsSelect});
 
 
                         }
@@ -145,12 +157,16 @@ module.exports = {
 
 
                             let obj_resp = {};
-                            user.role = parseInt(user.role);
+
+                            //user.role = user.role_id_fk;
                             obj_resp.user = user;
                             obj_resp.token = token;
                             delete obj_resp.user.password;
                             obj_resp.status = 200;
+                          //  obj_resp.user.role = user.role_id_fk;
+
                             obj_resp.message = "User Logged!";
+                            console.log("user: ",user);
 
 
 

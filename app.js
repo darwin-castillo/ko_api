@@ -5,6 +5,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const useragent = require('express-useragent');
+var paypal = require('paypal-rest-sdk');
 
 
 // Settings
@@ -42,7 +43,9 @@ const firebaseConfig = {
 // Starting the server
 server.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
+   // process.env.MY_VARIABLE = 'ahoy';
     console.log("var_env ", process.env.VAR_ENV);
+    console.log(process.env);
 
 
     // Initialize Firebase
