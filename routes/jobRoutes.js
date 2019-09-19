@@ -86,7 +86,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
     let select = "SELECT    " +
         "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
-        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address, lc.coordinates, " +
+        "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address, lc.coordinates, lc.latitude, lc.longitude " +
         "json_build_object('address',lc.address,  'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'coordinates',lc.coordinates) as location " +
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
