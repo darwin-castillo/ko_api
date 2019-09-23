@@ -305,7 +305,9 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                         + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2,"
                         + "" + job.id_category + ","
                         + "'" + (typeof job.id_location === 'undefined' ? "N/A" : job.id_location) + "'"
-                        + ")";
+                        + ") ";
+
+
                     //  console.log(query);
 
                     pool.query(query, (error, results) => {
@@ -413,9 +415,12 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 let fields = [];
                 let somevalue = false;
                 let sendToCleaner = false;
+                let isUpdatedStatus = false;
+                let isUpdateInvoice = false;
                 if (body.id_status) {
                     fields.push("id_status=" + body.id_status);
                     somevalue = true;
+                    isUpdatedStatus = true;
                 }
 
                 if (body.id_cleaner) {
@@ -426,6 +431,11 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
 
                 if (body.id_valoration) {
                     fields.push("id_valoration=" + body.id_valoration);
+                    somevalue = true;
+                }
+                if (body.id_invoice_status) {
+                    fields.push("id_invoice_status=" + body.id_invoice_status);
+                    isUpdateInvoice = true;
                     somevalue = true;
                 }
 
@@ -440,7 +450,10 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 }
                 fields.push(' date_updated=now()');
 
-                query = query + fields.join(',') + " WHERE id=" + req.params.id
+
+                let updateStatus = isUpdatedStatus ? "; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ")" : "";
+                let updateInvoice = isUpdateInvoice ? "; INSERT INTO klop_invoice_status_history(id_invoice_status,id_job,date_created,id_user) VALUES(" + body.id_invoice_status + "," + req.params.id + ",now()," + decoded.id + ")" : "";
+                query = query + fields.join(',') + " WHERE id=" + req.params.id + updateStatus + updateInvoice;
                 console.log("PUT JOB ", query);
 
                 if (somevalue) {
@@ -456,8 +469,10 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                         else {
 
                             if (sendToCleaner) {
+
                                 pool.query(SELECT_JOBS + " WHERE jo.id=" + req.params.id, (er, rest) => {
                                     //todo: send notifications via email and push
+
 
                                     res.status(200).json({status: 200, message: "job is updated!"});
                                 });
@@ -484,6 +499,57 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
     //res.send({message: "API OK!"});
 
 });
+
+
+router.get('/api/jobs/history/invoicing/:idjob', verifyToken, (req, res) => {
+    console.log('GET invoicing', req.params.idjob);
+    let query = "SELECT hi.id,hi.id_invoice_status,iv.title as invoicing_status, us.name as updated_by, jo.title as job_title, jo.id as id_job\n" +
+        "FROM klop_invoice_status_history as hi\n" +
+        "LEFT OUTER JOIN klop_invoice_status as iv on iv.id = hi.id_invoice_status \n" +
+        "LEFT OUTER JOIN klop_users as us on us.id = hi.id_user\n" +
+        "LEFT OUTER JOIN klop_jobs as jo on jo.id = hi.id_job\n WHERE id_job=" + req.params.idjob;
+    console.log(query);
+    pool.query(query, (error, results) => {
+        if (error) {
+            res.status(500).json({error: 500, message: error})
+        }
+        else {
+            let list = results.rows;
+            let obj = {};
+            obj.list = list;
+            obj.count = list.length;
+            res.status(200).json(obj);
+        }
+    });
+
+
+});
+
+router.get('/api/jobs/history/status/:idjob', verifyToken, (req, res) => {
+    console.log('GET invoicing', req.params.idjob);
+    let query = "SELECT hi.id,hi.id_status,st.title as status, us.name as updated_by, jo.title as job_title, jo.id as id_job "
+        + " FROM klop_job_status_history as hi "
+        + " LEFT OUTER JOIN klop_job_status as st on st.id = hi.id_status "
+        + " LEFT OUTER JOIN klop_users as us on us.id = hi.id_user "
+        + " LEFT OUTER JOIN klop_jobs as jo on jo.id = hi.id_job WHERE id_job=" + req.params.idjob;
+    console.log(query);
+    pool.query(query, (error, results) => {
+        if (error) {
+            res.status(500).json({error: 500, message: error})
+        }
+        else {
+            let list = results.rows;
+            let obj = {};
+            obj.list = list;
+            obj.count = list.length;
+            res.status(200).json(obj);
+        }
+    });
+
+
+});
+
+
 
 router.delete('/api/jobs/:id', verifyToken, (req, res) => {
     console.log('DELETE BY ID ', req.params.id);
