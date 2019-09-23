@@ -20,6 +20,7 @@ const sequelize = new Sequelize(pg_db, pg_user, pg_pass, {
     dialect: 'postgres',
 });
 
+
 sequelize.authenticate()
     .then(() => {
         console.log('Conectado con Seq')
