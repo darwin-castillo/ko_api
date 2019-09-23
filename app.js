@@ -45,8 +45,8 @@ const firebaseConfig = {
 server.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
    // process.env.MY_VARIABLE = 'ahoy';
-    console.log("var_env ", process.env.VAR_ENV);
-    console.log(process.env);
+    // console.log("var_env ", process.env.VAR_ENV);
+    // console.log(process.env);
 
 
     // Initialize Firebase

@@ -16,7 +16,7 @@ module.exports = {
 
     getAllUsers: (req, res) => {
         console.log('GET ALL USERS');
-        let query = 'SELECT  ' +
+        let query = 'SELECT   ' +
             'u.id,u.name,u.surname,u.email,' +
             'u.phone,u.address,u.city,u.postcode,' +
             'u.image,u.verified,u.payment,u.active,' +
