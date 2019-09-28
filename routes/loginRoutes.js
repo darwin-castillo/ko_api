@@ -11,6 +11,12 @@ const User = require('../models/users');
 //app.use(bodyParser.urlencoded({extended: false}))
 //app.use(bodyParser.json({limit:'10mb'}))
 
+router.get('/api/config',(req,res)=>{
+    console.log(app.get('DATABASE_URL'));
+    console.log(process.env.DATABASE_URL);
+   res.status(200).json({"good":"yes"});
+});
+
 router.post('/api/login', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
