@@ -451,7 +451,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 fields.push(' date_updated=now()');
 
 
-                let updateStatus = isUpdatedStatus ? "; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ")" : "";
+                let updateStatus = isUpdatedStatus ? "; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user,comment) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ",'"+typeof body.comment!=='undefined'?body.comment:"" +"')" : "";
                 let updateInvoice = isUpdateInvoice ? "; INSERT INTO klop_invoice_status_history(id_invoice_status,id_job,date_created,id_user) VALUES(" + body.id_invoice_status + "," + req.params.id + ",now()," + decoded.id + ")" : "";
                 query = query + fields.join(',') + " WHERE id=" + req.params.id + updateStatus + updateInvoice;
                 console.log("PUT JOB ", query);
