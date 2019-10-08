@@ -14,10 +14,10 @@ module.exports = {
      * @param res
      */
     saveBillingDetail: (req, res) => {
-        console.log('POST  api/billing ',req.params.idjob);
+        console.log('POST  api/billing ', req.params.idjob);
         console.log('body ', req.body);
         let token = req.get('Authorization');
-   let  body = req.body;
+        let body = req.body;
 
 
         let less = [];
@@ -37,7 +37,7 @@ module.exports = {
                         let query = "INSERT INTO public.klop_billing_details(" +
                             " description,amount, comment,id_job) " +
                             " VALUES (" +
-                            "'" + body.description + "'," + body.amount + ",'"+body.comment+"',"+req.params.idjob+
+                            "'" + body.description + "'," + body.amount + ",'" + body.comment + "'," + req.params.idjob +
                             ");"
 
 
@@ -94,6 +94,50 @@ module.exports = {
 
     },
 
+
+    saveTransaction: (req, res) => {
+        console.log('POST  api/billing/transaction ', req.params.idjob);
+        let body = req.body;
+        let idJob = req.params.idjob;
+
+        let items = body.items;
+        pool.query("DELETE FROM public.klop_billing_details WHERE id_job=" + idJob, (error, results) => {
+            let valid = true;
+            for (let i = 0; i < items.length; i++) {
+                const query = 'INSERT INTO public.klop_billing_details( ' +
+                    ' id, description, amount, comment, id_job, quantity, type) ' +
+                    ' VALUES($1, $2, $3, $4, $5, $6, $7 );';
+                console.log(query)
+                const values = [items[i].id, items[i].description, items[i].amount, items[i].comment, idJob, items[i].quantity, items[i].type]
+
+                pool.query(query, values, (errr, ress) => {
+                    if (errr) {
+                        //  res.status(500).json({status:500,message:errr});
+                        valid = false;
+                    }
+                    else {
+                        console.log(items.length, " = ", i+1);
+                        if (items.length === (i + 1) && valid) {
+
+                             res.status(201).json({status: 201, message:"Transaction saved"});
+
+                        }
+                        else if(items.length === (i + 1) && !valid){
+                            res.status(500).json({status: 201, message:"some or all  items not saved"});
+                        }
+
+                    }
+                });
+
+
+            }
+
+        });
+
+
+    },
+
+
     /**
      * get skills by self user
      * @param req
@@ -106,26 +150,22 @@ module.exports = {
 
         console.log("GET billing BY job ");
 
-         let query = 'SELECT * FROM public.klop_billing_details WHERE id_job='+idJob
-                    pool.query(query, (error, results) => {
-                        if (error) {
-                            return res.status(500).json({status: 500, message: error});
-                        }
-                        else {
-                            let list = results.rows;
-                            let obj = {};
-                            obj.list = list;
-                            obj.count = list.length;
-                            res.status(200).json(obj);
-                        }
-                    })
-
-
-
+        let query = 'SELECT * FROM public.klop_billing_details WHERE id_job=' + idJob
+        pool.query(query, (error, results) => {
+            if (error) {
+                return res.status(500).json({status: 500, message: error});
+            }
+            else {
+                let list = results.rows;
+                let obj = {};
+                obj.list = list;
+                obj.count = list.length;
+                res.status(200).json(obj);
+            }
+        })
 
 
     },
-
 
 
 }

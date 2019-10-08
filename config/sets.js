@@ -3,7 +3,7 @@
  * SEED of JWT
  * @type {string}
  */
-const JWT_SEED = process.env.JWT_SEED;
+const JWT_SEED =  'KlopsAPi_1_dev'// process.env.JWT_SEED;
 
 /**
  * Caducity of JWT Aprox 1 year
