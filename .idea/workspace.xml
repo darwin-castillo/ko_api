@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3e5dcbf5-7d15-47c9-b6b7-ab7b75b21ade" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
-      <change beforePath="$PROJECT_DIR$/config/config.js" afterPath="$PROJECT_DIR$/config/config.js" />
-      <change beforePath="$PROJECT_DIR$/config/sets.js" afterPath="$PROJECT_DIR$/config/sets.js" />
       <change beforePath="$PROJECT_DIR$/controllers/billingController.js" afterPath="$PROJECT_DIR$/controllers/billingController.js" />
-      <change beforePath="$PROJECT_DIR$/routes/billingRoutes.js" afterPath="$PROJECT_DIR$/routes/billingRoutes.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -41,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="billingController.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="billingController.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/controllers/billingController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="118" column="60" lean-forward="false" selection-start-line="118" selection-start-column="60" selection-end-line="118" selection-end-column="60" />
+            <state relative-caret-position="185">
+              <caret line="116" column="40" lean-forward="false" selection-start-line="116" selection-start-column="40" selection-end-line="116" selection-end-column="40" />
               <folding>
                 <element signature="e#1730#2824#0" expanded="false" />
               </folding>
@@ -86,18 +81,18 @@
       <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
+            <state relative-caret-position="-334">
               <caret line="2" column="21" lean-forward="false" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sets.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sets.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/sets.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="165">
-              <caret line="11" column="29" lean-forward="true" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+              <caret line="11" column="29" lean-forward="false" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -195,9 +190,9 @@
         <option value="$PROJECT_DIR$/routes/jobRoutes.js" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/routes/billingRoutes.js" />
-        <option value="$PROJECT_DIR$/controllers/billingController.js" />
         <option value="$PROJECT_DIR$/config/config.js" />
         <option value="$PROJECT_DIR$/config/sets.js" />
+        <option value="$PROJECT_DIR$/controllers/billingController.js" />
       </list>
     </option>
   </component>
@@ -418,12 +413,12 @@
       <workItem from="1569698425296" duration="2949000" />
       <workItem from="1569864073674" duration="3578000" />
       <workItem from="1570457807891" duration="1306000" />
-      <workItem from="1570543761230" duration="5316000" />
+      <workItem from="1570543761230" duration="5862000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="260173000" />
+    <option name="totallyTimeSpent" value="260719000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -728,20 +723,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/billingController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="118" column="60" lean-forward="false" selection-start-line="118" selection-start-column="60" selection-end-line="118" selection-end-column="60" />
-          <folding>
-            <element signature="e#1730#2824#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="411">
           <caret line="41" column="37" lean-forward="false" selection-start-line="41" selection-start-column="37" selection-end-line="41" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/sets.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="29" lean-forward="false" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-334">
+          <caret line="2" column="21" lean-forward="false" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
           <folding />
         </state>
       </provider>
@@ -754,19 +755,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/config.js">
+    <entry file="file://$PROJECT_DIR$/controllers/billingController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="21" lean-forward="false" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config/sets.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="29" lean-forward="true" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
-          <folding />
+        <state relative-caret-position="185">
+          <caret line="116" column="40" lean-forward="false" selection-start-line="116" selection-start-column="40" selection-end-line="116" selection-end-column="40" />
+          <folding>
+            <element signature="e#1730#2824#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

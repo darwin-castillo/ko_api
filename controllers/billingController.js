@@ -114,6 +114,7 @@ module.exports = {
                     if (errr) {
                         //  res.status(500).json({status:500,message:errr});
                         valid = false;
+                        console.log(errr)
                     }
                     else {
                         console.log(items.length, " = ", i+1);
