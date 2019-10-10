@@ -153,7 +153,8 @@ module.exports = {
         console.log("GET billing BY job ");
 
         let query = 'SELECT * FROM public.klop_billing_details WHERE id_job=$1 ORDER BY id'
-        pool.query(query, (error, results) => {
+        let values =[idJob]
+        pool.query(query,values, (error, results) => {
             if (error) {
                 return res.status(500).json({status: 500, message: error});
             }
