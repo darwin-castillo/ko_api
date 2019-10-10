@@ -102,8 +102,8 @@ module.exports = {
 
         let items = body.items;
         pool.query("DELETE FROM public.klop_billing_details WHERE id_job=" + idJob, (error, results) => {
-            console.log("Error: ",error)
-            console.log("Results: ",results);
+            console.log("Error: ", error)
+            console.log("Results: ", results);
             let valid = true;
             for (let i = 0; i < items.length; i++) {
                 const query = 'INSERT INTO public.klop_billing_details( ' +
@@ -112,7 +112,7 @@ module.exports = {
                 console.log(query)
 
                 const values = [items[i].id, items[i].description, items[i].amount, items[i].comment, idJob, items[i].quantity, items[i].type]
-                console.log("values ",values);
+                console.log("values ", values);
                 pool.query(query, values, (errr, ress) => {
                     if (errr) {
                         //  res.status(500).json({status:500,message:errr});
@@ -120,14 +120,14 @@ module.exports = {
                         console.log(errr)
                     }
                     else {
-                        console.log(items.length, " = ", i+1);
+                        console.log(items.length, " = ", i + 1);
                         if (items.length === (i + 1) && valid) {
 
-                             res.status(201).json({status: 201, message:"Transaction saved"});
+                            res.status(201).json({status: 201, message: "Transaction saved"});
 
                         }
-                        else if(items.length === (i + 1) && !valid){
-                            res.status(500).json({status: 201, message:"some or all  items not saved"});
+                        else if (items.length === (i + 1) && !valid) {
+                            res.status(500).json({status: 201, message: "some or all  items not saved"});
                         }
 
                     }
@@ -137,7 +137,7 @@ module.exports = {
             }
 
         });
-        
+
     },
 
     /**
@@ -153,8 +153,8 @@ module.exports = {
         console.log("GET billing BY job ");
 
         let query = 'SELECT * FROM public.klop_billing_details WHERE id_job=$1 ORDER BY id'
-        let values =[idJob]
-        pool.query(query,values, (error, results) => {
+        let values = [idJob]
+        pool.query(query, values, (error, results) => {
             if (error) {
                 return res.status(500).json({status: 500, message: error});
             }
@@ -166,6 +166,57 @@ module.exports = {
                 res.status(200).json(obj);
             }
         })
+
+
+    },
+
+
+    getInvoicesByCleaner: (req, res) => {
+        let token = req.get('Authorization');
+        jwt.verify(token, JWT_SEED, (err, decoded) => {
+
+
+            if (err) {
+                res.status(500).json({error: 500, message: err})
+            }
+            else {
+
+                if (typeof decoded.id !== 'undefined') {
+
+                    let query = 'SELECT  j.id,j.title, ih.date_created AS date_invoice, ih.id_invoice_status,  j.id_status ,j.id_invoice_status as actual_status, c.name AS client, k.name as cleaner, \n' +
+                        'ROUND(SUM(b.amount*b.quantity)::NUMERIC,2) as amount, \n' +
+                        'json_build_object(\'id\',i.id,\'title\',i.title) as status\n' +
+                        'FROM public.klop_jobs j\n' +
+                        'LEFT OUTER JOIN  klop_users as c on c.id = j.users_id_autor\n' +
+                        'LEFT OUTER JOIN  klop_users as k on k.id = j.users_id_cleaner\n' +
+                        'RIGHT OUTER JOIN  klop_billing_details as b on b.id_job = j.id\n' +
+                        'LEFT OUTER JOIN klop_invoice_status as i on i.id = j.id_invoice_status\n' +
+                        ' INNER JOIN klop_invoice_status_history ih on ih.id_job = j.id\n' +
+                        'WHERE ih.id_invoice_status=3\n AND k.id=$1' +
+                        'GROUP BY j.id,c.id,k.id,b.id_job,i.id, ih.date_created,ih.id_invoice_status\n' +
+                        'order by j.id'
+                    console.log(query);
+                    let values = [decoded.id];
+                    console.log("values ",values);
+
+                    pool.query(query,values,(err2,rest)=>{
+                        if(err2){
+                            res.status(500).json({error: 500, message: err2})
+                        }
+                        else{
+                            let list = rest.rows;
+                            let obj = {};
+                            obj.list = list;
+                            obj.count = list.length;
+                            res.status(200).json(obj);
+                        }
+                    })
+
+                }
+            }
+
+
+        });
 
 
     },
