@@ -12,8 +12,7 @@ const {saveBillingDetail,getBillingDetail,saveTransaction} = require('../control
  */
 router.post('/api/billing/:idjob',verifyToken,saveBillingDetail);
 router.get('/api/billing/:idjob',verifyToken,getBillingDetail);
-router.post('/api/billing/transaction/:idjob',verifyToken,saveTransaction)
-
+router.post('/api/billing/transaction/:idjob',verifyToken,saveTransaction);
 
 
 module.exports = router;

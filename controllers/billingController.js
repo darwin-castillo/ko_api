@@ -102,14 +102,17 @@ module.exports = {
 
         let items = body.items;
         pool.query("DELETE FROM public.klop_billing_details WHERE id_job=" + idJob, (error, results) => {
+            console.log("Error: ",error)
+            console.log("Results: ",results);
             let valid = true;
             for (let i = 0; i < items.length; i++) {
                 const query = 'INSERT INTO public.klop_billing_details( ' +
                     ' id, description, amount, comment, id_job, quantity, type) ' +
                     ' VALUES($1, $2, $3, $4, $5, $6, $7 );';
                 console.log(query)
-                const values = [items[i].id, items[i].description, items[i].amount, items[i].comment, idJob, items[i].quantity, items[i].type]
 
+                const values = [items[i].id, items[i].description, items[i].amount, items[i].comment, idJob, items[i].quantity, items[i].type]
+                console.log("values ",values);
                 pool.query(query, values, (errr, ress) => {
                     if (errr) {
                         //  res.status(500).json({status:500,message:errr});
@@ -134,10 +137,8 @@ module.exports = {
             }
 
         });
-
-
+        
     },
-
 
     /**
      * get skills by self user
