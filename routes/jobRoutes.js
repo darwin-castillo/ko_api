@@ -432,11 +432,18 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 if (body.id_valoration) {
                     fields.push("id_valoration=" + body.id_valoration);
                     somevalue = true;
+
                 }
                 if (body.id_invoice_status) {
                     fields.push("id_invoice_status=" + body.id_invoice_status);
                     isUpdateInvoice = true;
                     somevalue = true;
+
+                    if(body.id_invoice_status===3){
+                        fields.push(' date_invoice=now()');
+                    }
+
+
                 }
 
                 if (body.id_location) {
@@ -449,6 +456,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                     somevalue = true;
                 }
                 fields.push(' date_updated=now()');
+
 
 
                 let updateStatus = isUpdatedStatus ? ("; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user,comment) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ",'"+(typeof body.comment!=='undefined'?body.comment:"" )+"')" ): "";

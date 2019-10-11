@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const Pool = require('pg').Pool
-const environment = 2 ;  // 1 -> Production   // 2-> Dev  // 3-> Local
+const environment = 3 ;  // 1 -> Production   // 2-> Dev  // 3-> Local
 const pg_user = environment===2?process.env.DB_USER:'postgres';
 const pg_host =  environment===2?process.env.DB_HOST:'localhost';
 const pg_db = environment===2?process.env.DB_NAME:'kleanops';
@@ -22,6 +22,7 @@ const sequelize = new Sequelize(pg_db, pg_user, pg_pass, {
 
 
 sequelize.authenticate()
+
     .then(() => {
         console.log('Conectado con Seq')
     })
