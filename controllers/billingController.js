@@ -224,4 +224,57 @@ module.exports = {
     },
 
 
+    getInvoicesByClient: (req, res) => {
+        let token = req.get('Authorization');
+        jwt.verify(token, JWT_SEED, (err, decoded) => {
+
+
+            if (err) {
+                res.status(500).json({error: 500, message: err})
+            }
+            else {
+
+                if (typeof decoded.id !== 'undefined') {
+
+                    let query = 'SELECT  j.id,j.title, j.date_invoice,\n' +
+                        'j.id_status ,j.id_invoice_status as actual_status_invoice, c.name AS client, k.name as cleaner, \n' +
+                        'ROUND(SUM(b.amount*b.quantity)::NUMERIC,2) as amount, \n' +
+                        'json_build_object(\'id\',i.id,\'title\',i.title) as status\n' +
+                        'FROM public.klop_jobs j\n' +
+                        'LEFT OUTER JOIN  klop_users as c on c.id = j.users_id_autor\n' +
+                        'LEFT OUTER JOIN  klop_users as k on k.id = j.users_id_cleaner\n' +
+                        'LEFT OUTER JOIN  klop_billing_details as b on b.id_job = j.id\n' +
+                        'LEFT OUTER JOIN klop_invoice_status as i on i.id = j.id_invoice_status\n' +
+                        '\n' +
+                        'WHERE j.users_id_autor=$1 \n' +
+                        'GROUP BY j.id,c.id,k.id,b.id_job,i.id\n' +
+                        'ORDER BY j.id'
+                    console.log(query);
+                    let values = [decoded.id];
+                    console.log("values ",values);
+
+                    pool.query(query,values,(err2,rest)=>{
+                        if(err2){
+                            console.log(err2)
+                            res.status(500).json({error: 500, message: err2})
+                        }
+                        else{
+                            let list = rest.rows;
+                            let obj = {};
+                            obj.list = list;
+                            obj.count = list.length;
+                            res.status(200).json(obj);
+                        }
+                    })
+
+                }
+            }
+
+
+        });
+
+
+    },
+
+
 }

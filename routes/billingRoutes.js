@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router();
 const {verifyToken} = require('../middlewares/auth');
-const {saveBillingDetail,getBillingDetail,saveTransaction,getInvoicesByCleaner} = require('../controllers/billingController');
+const {saveBillingDetail,getBillingDetail,saveTransaction,getInvoicesByCleaner,getInvoicesByClient} = require('../controllers/billingController');
 
 
 
@@ -15,6 +15,7 @@ router.post('/api/billing/:idjob',verifyToken,saveBillingDetail);
 router.get('/api/billing/:idjob',verifyToken,getBillingDetail);
 router.post('/api/billing/transaction/:idjob',verifyToken,saveTransaction);
 router.get('/api/billing/invoices/cleaner',verifyToken,getInvoicesByCleaner);
+router.get('/api/billing/invoices/client',verifyToken,getInvoicesByClient);
 
 
 module.exports = router;
