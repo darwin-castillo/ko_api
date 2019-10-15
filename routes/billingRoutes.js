@@ -21,7 +21,7 @@ router.get('/api/billing/:idjob',verifyToken,getBillingDetail);
 router.post('/api/billing/transaction/:idjob',verifyToken,saveTransaction);
 router.get('/api/billing/invoices/cleaner',verifyToken,getInvoicesByCleaner);
 router.get('/api/billing/invoices/client',verifyToken,getInvoicesByClient);
-router.get('/api/billing/clients',verifyToken, getClientByCleaner);
+router.get('/api/billing/active/clients',verifyToken, getClientByCleaner);
 
 
 module.exports = router;
