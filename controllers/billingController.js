@@ -198,14 +198,14 @@ module.exports = {
                         'ORDER BY j.id'
                     console.log(query);
                     let values = [decoded.id];
-                    console.log("values ",values);
+                    console.log("values ", values);
 
-                    pool.query(query,values,(err2,rest)=>{
-                        if(err2){
+                    pool.query(query, values, (err2, rest) => {
+                        if (err2) {
                             console.log(err2)
                             res.status(500).json({error: 500, message: err2})
                         }
-                        else{
+                        else {
                             let list = rest.rows;
                             let obj = {};
                             obj.list = list;
@@ -251,14 +251,14 @@ module.exports = {
                         'ORDER BY j.id'
                     console.log(query);
                     let values = [decoded.id];
-                    console.log("values ",values);
+                    console.log("values ", values);
 
-                    pool.query(query,values,(err2,rest)=>{
-                        if(err2){
+                    pool.query(query, values, (err2, rest) => {
+                        if (err2) {
                             console.log(err2)
                             res.status(500).json({error: 500, message: err2})
                         }
-                        else{
+                        else {
                             let list = rest.rows;
                             let obj = {};
                             obj.list = list;
@@ -274,6 +274,51 @@ module.exports = {
         });
 
 
+    },
+
+
+    getClientByCleaner: (req,res) => {
+        let token = req.get('Authorization');
+        jwt.verify(token, JWT_SEED, (err, decoded) => {
+
+
+            if (err) {
+                res.status(500).json({error: 500, message: err})
+            }
+            else {
+
+                if (typeof decoded.id !== 'undefined') {
+                    let query = " SELECT  \n" +
+                        " json_build_object('id',c.id,'name',c.name,'surname', c.surname, 'email',c.email,'phone',c.phone,'image',c.image) as client,\n" +
+                        " json_build_object('id',k.id,'name',k.name,'surname', k.surname, 'email',k.email,'phone',k.phone,'image',k.image) as cleaner, \n" +
+                        "MIN(j.id_status) as min_status \n" +
+                        "  FROM klop_jobs j\n" +
+                        "   LEFT OUTER JOIN  klop_users as c on c.id = j.users_id_autor\n" +
+                        " LEFT OUTER JOIN  klop_users as k on k.id = j.users_id_cleaner\n" +
+                        " LEFT OUTER JOIN klop_job_status s on s.id=j.id_status\n" +
+                        "WHERE j.users_id_cleaner = $1\n" +
+                        "GROUP BY  c.id,k.name,k.id,k.surname,k.email,k.phone,k.image";
+                    console.log(query);
+                    let values = [decoded.id];
+                    console.log("values ", values);
+
+                    pool.query(query, values, (err2, rest) => {
+                        if (err2) {
+                            console.log(err2)
+                            res.status(500).json({error: 500, message: err2})
+                        }
+                        else {
+                            let list = rest.rows;
+                            let obj = {};
+                            obj.list = list;
+                            obj.count = list.length;
+                            res.status(200).json(obj);
+                        }
+                    })
+
+                }
+            }
+        })
     },
 
 
