@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport(smtpPool({
 }));
 
 const SELECT_JOBS = "SELECT    " +
-    "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
+    "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, jo.date_invoice, " +
     " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
     "du.name as cleaner, du.id as id_cleaner ,  COUNT(kp.id_job) as total_proposals,  " +
     "json_build_object('title',lc.title, 'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'address',lc.address, 'coordinates',lc.coordinates) as location " +
@@ -84,7 +84,7 @@ router.get('/api/jobs', verifyToken, (req, res) => {
 
      */
     let select = "SELECT    " +
-        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
+        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, jo.date_invoice, " +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
         "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, lc.address, lc.coordinates, lc.latitude, lc.longitude, " +
         "json_build_object('address',lc.address,  'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'coordinates',lc.coordinates) as location " +
@@ -238,7 +238,7 @@ router.get('/api/jobs/:id', verifyToken, (req, res) => {
     console.log('GET JOBS BY id= ', req.params.id);
 
     let select = "SELECT    " +
-        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, " +
+        "jo.id, jo.title,jo.description,jo.date_created, jo.date_updated, jo.date_schedule, jo.date_deadline, jo.date_invoice,  " +
         "json_build_object('phone',us.phone,  'email',us.email) as contact ," +
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
         "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, ct.id as id_category, lc.address, lc.coordinates, " +
