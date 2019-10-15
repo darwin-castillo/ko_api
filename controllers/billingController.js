@@ -283,7 +283,7 @@ module.exports = {
 
 
             if (err) {
-                res.status(500).json({error: 500, message: err})
+                res.status(500).json({error: 500, type:"TK", message: err})
             }
             else {
 
@@ -305,7 +305,7 @@ module.exports = {
                     pool.query(query, values, (err2, rest) => {
                         if (err2) {
                             console.log(err2)
-                            res.status(500).json({error: 500, message: err2})
+                            res.status(500).json({error: 500, type:"BD",message: err2})
                         }
                         else {
                             let list = rest.rows;
