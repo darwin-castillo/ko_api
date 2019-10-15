@@ -246,7 +246,7 @@ module.exports = {
                         'LEFT OUTER JOIN  klop_billing_details as b on b.id_job = j.id\n' +
                         'LEFT OUTER JOIN klop_invoice_status as i on i.id = j.id_invoice_status\n' +
                         '\n' +
-                        'WHERE j.users_id_autor=$1 \n' +
+                        'WHERE j.users_id_autor=$1 and j.id_status>4\n' +
                         'GROUP BY j.id,c.id,k.id,b.id_job,i.id\n' +
                         'ORDER BY j.id'
                     console.log(query);
