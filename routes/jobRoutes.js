@@ -95,9 +95,14 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
         "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id ";
-
+let filt=false;
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
+        filt =true;
+    }
+
+    if(req.query.category){
+        select += ((filt)?' AND ':' WHERE ')+' jo.id_category=' + req.query.category;
     }
 
 
