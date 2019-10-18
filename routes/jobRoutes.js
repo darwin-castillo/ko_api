@@ -100,6 +100,8 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
     }
 
+
+
     select += " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
         "ORDER BY jo.id desc";
 
@@ -147,14 +149,26 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                     for (let i = 0; i < arrayElements.length; i++) {
                         if (typeof arrayElements[i].distance !== "undefined") {
                             list[i].distance = arrayElements[i].distance.text;
+                            list[i].distanceValue=arrayElements[i].distance.value/1000
                         }
                         else {
                             list[i].distance = "-1";
+                            list[i].distanceValue=-1;
                         }
                     }
                     let obj = {};
                     obj.origin_address = originAddress;
+
+
+                    if(req.query.lowerd && req.query.distance){
+                        list = list.filter((item)=>{
+                           console.log("distance ",item.distanceValue," lowerd ",req.query.lowerd, item.distanceValue <= req.query.lowerd)
+                            return (item.distanceValue <= req.query.lowerd) && (item.distance!=="-1")
+                        })
+                    }
+
                     obj.list = list;
+
                     obj.count = list.length;
                     res.status(200).json(obj);
 
