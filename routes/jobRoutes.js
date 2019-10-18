@@ -160,10 +160,11 @@ router.get('/api/jobs', verifyToken, (req, res) => {
                     obj.origin_address = originAddress;
 
 
-                    if(req.query.lowerd && req.query.distance){
+                    if(req.query.limit && req.query.distance){
+                        console.log("....filter by distance....");
                         list = list.filter((item)=>{
-                           console.log("distance ",item.distanceValue," lowerd ",req.query.lowerd, item.distanceValue <= req.query.lowerd)
-                            return (item.distanceValue <= req.query.lowerd) && (item.distance!=="-1")
+                           console.log("distance ",item.distanceValue," limit ",req.query.limit, item.distanceValue <= req.query.limit)
+                            return (item.distanceValue <= req.query.limit) && (item.distance!=="-1")
                         })
                     }
 
