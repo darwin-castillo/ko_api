@@ -7,7 +7,9 @@ const {saveBillingDetail,
     saveTransaction,
     getInvoicesByCleaner,
     getInvoicesByClient,
-    getClientByCleaner} = require('../controllers/billingController');
+    getClientByCleaner,
+    testPromise
+} = require('../controllers/billingController');
 
 
 
@@ -22,6 +24,7 @@ router.post('/api/billing/transaction/:idjob',verifyToken,saveTransaction);
 router.get('/api/billing/invoices/cleaner',verifyToken,getInvoicesByCleaner);
 router.get('/api/billing/invoices/client',verifyToken,getInvoicesByClient);
 router.get('/api/billing/active/clients',verifyToken, getClientByCleaner);
+router.get('/api/test/promise',testPromise)
 
 
 module.exports = router;

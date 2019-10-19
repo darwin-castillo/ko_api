@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const {verifyToken} = require('../middlewares/auth');
+const {test, sendNotificationToUser,sendNotificationByJob} = require('../services/notificationService')
 
 module.exports = {
 
@@ -122,7 +123,7 @@ module.exports = {
                     else {
                         console.log(items.length, " = ", i + 1);
                         if (items.length === (i + 1) && valid) {
-
+                            sendNotificationByJob(idJob,"Status Invoice Updated","Billing Updated to IN PROCESS");
                             res.status(201).json({status: 201, message: "Transaction saved"});
 
                         }
@@ -277,13 +278,13 @@ module.exports = {
     },
 
 
-    getClientByCleaner: (req,res) => {
+    getClientByCleaner: (req, res) => {
         let token = req.get('Authorization');
         jwt.verify(token, JWT_SEED, (err, decoded) => {
 
 
             if (err) {
-                res.status(500).json({error: 500, type:"TK", message: err})
+                res.status(500).json({error: 500, type: "TK", message: err})
             }
             else {
 
@@ -305,7 +306,7 @@ module.exports = {
                     pool.query(query, values, (err2, rest) => {
                         if (err2) {
                             console.log(err2)
-                            res.status(500).json({error: 500, type:"BD",message: err2})
+                            res.status(500).json({error: 500, type: "BD", message: err2})
                         }
                         else {
                             let list = rest.rows;
@@ -320,6 +321,13 @@ module.exports = {
             }
         })
     },
+
+    testPromise: (req, res) => {
+      console.log("aqui");
+        sendNotificationByJob(30,"test job","test job");
+
+        res.status(200).json({"status": "OK"})
+    }
 
 
 }

@@ -8,6 +8,7 @@ const JWT_SEED = require("../config/sets").JWT_SEED;
 const smtpPool = require('nodemailer-smtp-pool');
 const axios = require('axios');
 const {parse} = require('querystring');
+const {sendNotificationByJob} = require('../services/notificationService')
 
 
 const nodemailer = require('nodemailer');
@@ -95,16 +96,15 @@ router.get('/api/jobs', verifyToken, (req, res) => {
         "LEFT OUTER JOIN public.klop_proposal as kp on jo.id = kp.id_job " +
         "LEFT OUTER JOIN public.klop_locations as lc on jo.id_location = lc.id " +
         "LEFT OUTER JOIN public.klop_category_job as ct on jo.id_category = ct.id ";
-let filt=false;
+    let filt = false;
     if (req.query.cleaner) {
         select += ' WHERE jo.users_id_cleaner=' + req.query.cleaner;
-        filt =true;
+        filt = true;
     }
 
-    if(req.query.category){
-        select += ((filt)?' AND ':' WHERE ')+' jo.id_category=' + req.query.category;
+    if (req.query.category) {
+        select += ((filt) ? ' AND ' : ' WHERE ') + ' jo.id_category=' + req.query.category;
     }
-
 
 
     select += " GROUP BY jo.id,st.id,us.id,du.id, ct.id, lc.id " +
@@ -154,22 +154,22 @@ let filt=false;
                     for (let i = 0; i < arrayElements.length; i++) {
                         if (typeof arrayElements[i].distance !== "undefined") {
                             list[i].distance = arrayElements[i].distance.text;
-                            list[i].distanceValue=arrayElements[i].distance.value/1000
+                            list[i].distanceValue = arrayElements[i].distance.value / 1000
                         }
                         else {
                             list[i].distance = "-1";
-                            list[i].distanceValue=-1;
+                            list[i].distanceValue = -1;
                         }
                     }
                     let obj = {};
                     obj.origin_address = originAddress;
 
 
-                    if(req.query.limit && req.query.distance){
+                    if (req.query.limit && req.query.distance) {
                         console.log("....filter by distance....");
-                        list = list.filter((item)=>{
-                           console.log("distance ",item.distanceValue," limit ",req.query.limit, item.distanceValue <= req.query.limit)
-                            return (item.distanceValue <= req.query.limit) && (item.distance!=="-1")
+                        list = list.filter((item) => {
+                            console.log("distance ", item.distanceValue, " limit ", req.query.limit, item.distanceValue <= req.query.limit)
+                            return (item.distanceValue <= req.query.limit) && (item.distance !== "-1")
                         })
                     }
 
@@ -263,7 +263,6 @@ router.get('/api/jobs/:id', verifyToken, (req, res) => {
         " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
         "du.name as cleaner, du.id as id_cleaner,  COUNT(kp.id_job) as total_proposals , ct.title as job_category, ct.id as id_category, lc.address, lc.coordinates, " +
         "json_build_object('address',lc.address,  'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'coordinates',lc.coordinates) as location " +
-
         "FROM  public.klop_jobs as jo " +
         "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
         "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
@@ -437,10 +436,24 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                 let sendToCleaner = false;
                 let isUpdatedStatus = false;
                 let isUpdateInvoice = false;
+
+                let messageNotif = "has been updated";
+                let titleNotif = "A Job has been updated";
+
                 if (body.id_status) {
                     fields.push("id_status=" + body.id_status);
                     somevalue = true;
                     isUpdatedStatus = true;
+                    if (body.id_status === 4)
+                        messageNotif = "has been updated to status IN DEALING";
+                   else if (body.id_status === 5)
+                        messageNotif = "has been updated to status IN PROCESS";
+                    else if (body.id_status === 6)
+                        messageNotif = "has been updated to status FINISHED";
+
+                    else if (body.id_status === 7)
+                        messageNotif = "has been updated to status BILLED";
+
                 }
 
                 if (body.id_cleaner) {
@@ -459,9 +472,16 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                     isUpdateInvoice = true;
                     somevalue = true;
 
-                    if(body.id_invoice_status===3){
+                    if (body.id_invoice_status === 3) {
                         fields.push(' date_invoice=now()');
+                        messageNotif = "An invoice has been generated";
                     }
+                    else if(body.id_invoice_status === 4){
+                        messageNotif = " invoice has been status PAID, Thank you!";
+                    }
+
+
+
 
 
                 }
@@ -475,11 +495,12 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                     fields.push("id_category=" + body.id_category);
                     somevalue = true;
                 }
+
+                sendNotificationByJob(req.params.id,titleNotif,messageNotif);
                 fields.push(' date_updated=now()');
 
 
-
-                let updateStatus = isUpdatedStatus ? ("; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user,comment) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ",'"+(typeof body.comment!=='undefined'?body.comment:"" )+"')" ): "";
+                let updateStatus = isUpdatedStatus ? ("; INSERT INTO klop_job_status_history(id_status,id_job,date_created,id_user,comment) VALUES(" + body.id_status + "," + req.params.id + ",now()," + decoded.id + ",'" + (typeof body.comment !== 'undefined' ? body.comment : "") + "')") : "";
                 let updateInvoice = isUpdateInvoice ? "; INSERT INTO klop_invoice_status_history(id_invoice_status,id_job,date_created,id_user) VALUES(" + body.id_invoice_status + "," + req.params.id + ",now()," + decoded.id + ")" : "";
                 query = query + fields.join(',') + " WHERE id=" + req.params.id + updateStatus + updateInvoice;
                 console.log("PUT JOB ", query);
@@ -576,7 +597,6 @@ router.get('/api/jobs/history/status/:idjob', verifyToken, (req, res) => {
 
 
 });
-
 
 
 router.delete('/api/jobs/:id', verifyToken, (req, res) => {

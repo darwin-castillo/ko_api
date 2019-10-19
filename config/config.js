@@ -33,6 +33,7 @@ sequelize.authenticate()
 
 
 
+
 const pool = new Pool({
     user: pg_user,
     host: pg_host,
