@@ -223,7 +223,7 @@ module.exports = {
     sendNotificationByJob: (idJob, title, message) => {
         return new Promise(function (resolve, reject) {
 
-            let query = "SELECT k.notif_email as notif_email_cleaner, k.id as id_cleaner, k.email as email_cleaner, k.notif_push as notif_push_cleaner," +
+            let query = "SELECT j.title, k.notif_email as notif_email_cleaner, k.id as id_cleaner, k.email as email_cleaner, k.notif_push as notif_push_cleaner," +
                 " c.notif_email as notif_email_client, c.id as id_client, c.email as email_client, c.notif_push as notif_push_client  " +
                 "FROM klop_jobs j " +
                 "LEFT OUTER JOIN klop_users as k on j.users_id_cleaner = k.id " +
@@ -234,19 +234,19 @@ module.exports = {
                 let user = results.rows[0];
                 console.log(user);
                 if (user.notif_email_cleaner) {
-                    sendEmailtoUser(user.email_cleaner, title, message);
+                    sendEmailtoUser(user.email_cleaner, title, user.title+": "+message);
 
                 }
                 if (user.notif_push_cleaner) {
-                    sendPushToUser(user.id_cleaner, title, message);
+                    sendPushToUser(user.id_cleaner, title, user.title+": "+message);
                 }
 
                 if (user.notif_email_client) {
-                    sendEmailtoUser(user.email_client, title, message);
+                    sendEmailtoUser(user.email_client, title, user.title+": "+message);
 
                 }
                 if (user.notif_push_client) {
-                    sendPushToUser(user.id_client, title, message);
+                    sendPushToUser(user.id_client, title, user.title+": "+message);
                 }
                 resolve();
             });
