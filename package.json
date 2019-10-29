@@ -28,7 +28,7 @@
     "npm": "^6.9.0",
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^7.10.0",
-    "sequelize": "^5.8.6",
+    "sequelize": "^5.15.1",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
