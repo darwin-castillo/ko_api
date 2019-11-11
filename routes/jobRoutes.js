@@ -324,13 +324,16 @@ router.post('/api/jobs', verifyToken, (req, res) => {
                         + "'" + (typeof job.date_schedule === 'undefined' ? "N/A" : job.date_schedule) + "', 2,"
                         + "" + job.id_category + ","
                         + "'" + (typeof job.id_location === 'undefined' ? "N/A" : job.id_location) + "'"
-                        + ") ";
+                        + ") RETURNING id";
 
 
                     //  console.log(query);
 
                     pool.query(query, (error, results) => {
                         //   let other ="WITH encrypted_data AS (SELECT crypt('"+user.password+"',gen_salt('md5')) as hashed_value) UPDATE klop.users SET password = (SELECT hashed_value FROM encrypted_data);"
+
+                        console.log("Inserted id: ", results.rows[0].id);
+
 
                         if (error) {
                             //  throw error
@@ -359,40 +362,80 @@ router.post('/api/jobs', verifyToken, (req, res) => {
 
                         }
                         else {
-                            let list = results.rows;
-                            let obj = {};
-                            obj.list = list;
-                            obj.count = list.length;
 
-                            axios.post('https://fcm.googleapis.com/fcm/send', {
-                                "to": "/topics/cleaners",
-                                "collapse_key": "type_a",
-                                "priority": "high",
-                                "content_available": true,
-                                "notification": {
-                                    "body": "New Job posted :" + job.title,
-                                    "title": "Kleanops"
-                                },
-                                "data": {
-                                    "body": "New Job posted :" + job.title,
-                                    "title": "Kleanops"
+
+                            if (typeof job.images !== "undefined") {
+                                let insertImg = "INSERT INTO public.klop_job_images (title,url,date_created,type,id_job) " +
+                                    "VALUES ";
+
+                                for (let h = 0; h < job.images.length; h++) {
+                                    insertImg += "('" + job.title + "_image','" + job.images[h] + "',now(),1," +results.rows[0].id + ") " + ((h + 1 === job.images.length) ? "" : ",\n");
                                 }
-                            }, {
-                                headers: {
-                                    'Authorization': 'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl'
-                                }
-                            })
-                                .then((response) => {
-                                    res.status(201).json({status: 201, message: "Successfully registered job!"});
-                                })
-                                .catch((error) => {
-                                    res.status(201).json({
-                                        status: 201,
-                                        message: "Successfully registered job, But not produce notification"
-                                    });
-                                })
+                                console.log(insertImg);
+
+
+                                pool.query(insertImg, (errorim, resultsim) => {
+                                    if (errorim) {
+                                        res.status(201).json({
+                                            status: 201,
+                                            message: "Successfully but not saved images!!",
+                                            error:errorim
+                                        });
+                                    }
+                                    else {
+
+                                        let list = results.rows;
+                                        let obj = {};
+                                        obj.list = list;
+                                        obj.count = list.length;
+
+                                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                                            "to": "/topics/cleaners",
+                                            "collapse_key": "type_a",
+                                            "priority": "high",
+                                            "content_available": true,
+                                            "notification": {
+                                                "body": "New Job posted :" + job.title,
+                                                "title": "Kleanops"
+                                            },
+                                            "data": {
+                                                "body": "New Job posted :" + job.title,
+                                                "title": "Kleanops"
+                                            }
+                                        }, {
+                                            headers: {
+                                                'Authorization': 'key=AAAAW-Zue1k:APA91bESzhIqrvroVh32Nz5pQB3CrJdwyCr3Q38mTYiFfC9lRtSr69HEwPCzp5v77NOhWiNaEqMmQOLHv9pIbmEI24BMT--4nUf_UwLmgzhgjtKB9BXZ5OZEkewC38AAqCImviHXs3Tl'
+                                            }
+                                        })
+                                            .then((response) => {
+                                                res.status(201).json({
+                                                    status: 201,
+                                                    message: "Successfully registered job!"
+                                                });
+                                            })
+                                            .catch((error) => {
+                                                res.status(201).json({
+                                                    status: 201,
+                                                    message: "Successfully registered job, But not produce notification"
+                                                });
+                                            })
+
+
+                                    }
+
+                                });
+
+                            }
+                            else{
+                                res.status(201).json({
+                                    status: 201,
+                                    message: "Job Successfully saved without images!!",
+                                    error:error
+                                });
+                            }
 
                         }
+
                     });
 
 
@@ -446,7 +489,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                     isUpdatedStatus = true;
                     if (body.id_status === 4)
                         messageNotif = "has been updated to status IN DEALING";
-                   else if (body.id_status === 5)
+                    else if (body.id_status === 5)
                         messageNotif = "has been updated to status IN PROCESS";
                     else if (body.id_status === 6)
                         messageNotif = "has been updated to status FINISHED";
@@ -476,12 +519,9 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                         fields.push(' date_invoice=now()');
                         messageNotif = "An invoice has been generated";
                     }
-                    else if(body.id_invoice_status === 4){
+                    else if (body.id_invoice_status === 4) {
                         messageNotif = " invoice has been status PAID, Thank you!";
                     }
-
-
-
 
 
                 }
@@ -496,7 +536,7 @@ router.put('/api/jobs/:id', verifyToken, (req, res) => {
                     somevalue = true;
                 }
 
-                sendNotificationByJob(req.params.id,titleNotif,messageNotif);
+                sendNotificationByJob(req.params.id, titleNotif, messageNotif);
                 fields.push(' date_updated=now()');
 
 
