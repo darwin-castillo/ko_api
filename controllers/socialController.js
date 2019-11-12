@@ -1,6 +1,5 @@
 const pool = require('../config/config').pool;
 const sequelize = require('../config/config').sequelize;
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const {verifyToken} = require('../middlewares/auth');
