@@ -1,4 +1,4 @@
-{  // bcrypt@3.0.1
+{
   "name": "kleanopsapi",
   "version": "1.0.0",
   "description": "API KleanOps",
