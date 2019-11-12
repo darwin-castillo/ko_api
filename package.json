@@ -1,11 +1,11 @@
-{
+{  // bcrypt@3.0.1
   "name": "kleanopsapi",
   "version": "1.0.0",
   "description": "API KleanOps",
   "main": "app.js",
   "scripts": {
     "devp": "nodemon src/app.js",
-    "start": "node -v; npm install  bcrypt@3.0.1 ; node app.js"
+    "start": "node -v; npm install  ; node app.js"
   },
   "keywords": [],
   "author": "",
