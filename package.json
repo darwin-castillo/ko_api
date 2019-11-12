@@ -5,9 +5,8 @@
   "main": "app.js",
   "scripts": {
     "devp": "nodemon src/app.js",
-    "start": "node -v; npm install;  bcrypt@3.0.7 ; node app.js"
+    "start": "node -v; npm install;  npm i bcrypt@3.0.7 ; node app.js"
   },
-
   "keywords": [],
   "author": "",
   "license": "ISC",
