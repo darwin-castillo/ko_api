@@ -9,6 +9,7 @@ const paypal = require('paypal-rest-sdk');
 
 
 // configure paypal with the credentials you got when you created your paypal app
+
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': process.env.PAYPAL_CLIENT_ID , // please provide your client id here
