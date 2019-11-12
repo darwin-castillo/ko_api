@@ -7,7 +7,6 @@ const pg_db = environment===2?process.env.DB_NAME:'kleanops';
 const pg_pass = environment===2?process.env.DB_PASS:'1234';
 const paypal = require('paypal-rest-sdk');
 
-
 // configure paypal with the credentials you got when you created your paypal app
 
 paypal.configure({
