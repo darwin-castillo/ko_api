@@ -362,7 +362,7 @@ module.exports = {
 
                             if (somevalue) {
                                 pool.query(query, (error, results) => {
-                                    console.log(results);
+                                    console.log("result update with password: ",results);
                                     if (error) {
                                         console.log("error ", error);
                                         res.status(500).json({
