@@ -3,7 +3,7 @@ const pool = require('../config/config').pool;
 const nodemailer = require('nodemailer');
 
 
-let transporter = nodemailer.createTransport("SMTP",{
+let transporter = nodemailer.createTransport({
     // host: 'smtp.gmail.com',
     host:'in-v3.mailjet.com',
     // port: 465,
