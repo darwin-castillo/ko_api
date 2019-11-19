@@ -487,13 +487,18 @@ module.exports = {
                             };
 
 
+
                             let transporter = nodemailer.createTransport({
-                                host: 'smtp.gmail.com',
-                                port: 465,
+                                // host: 'smtp.gmail.com',
+                                host:'in-v3.mailjet.com',
+                                // port: 465,
+                                port:587,
                                 secure: true,
                                 auth: {
-                                    user: 'kleanops.notifications@gmail.com', // Your email id
-                                    pass: 'Ko123456.' // Your password
+                                    //  user: 'kleanops.notifications@gmail.com', // Your email id
+                                    user:'a3d43544e078504ca7912598c390a51c',
+                                    //pass: 'Ko123456.' // Your password
+                                    pass:'792724948c3546556fbc59b2dfccff9a'
                                 },
                                 tls: {
                                     // do not fail on invalid certs
