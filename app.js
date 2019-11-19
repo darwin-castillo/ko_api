@@ -32,6 +32,9 @@ app.use(require('./routes/billingRoutes'))
 io.on('connection',(socket)=> {
     console.log('Alguien se ha conectado con Sockets');
 });
+
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyCUNtKiJWcFQTSiRVk0BytKLCctZsijBUI",
     authDomain: "kleanops-50f0c.firebaseapp.com",

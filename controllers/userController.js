@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SEED = require("../config/sets").JWT_SEED;
 const {verifyToken} = require('../middlewares/auth');
 const generator = require('generate-password');
+const {sendEmailtoUserById} = require('../services/notificationService')
 
 module.exports = {
 
@@ -187,7 +188,7 @@ module.exports = {
                     + "'" + (typeof user.description === 'undefined' ? "N/A" : user.description) + "'" + ','
                     + "" + user.role + ','
                     + "'" + hash + "'"
-                    + ')';
+                    + ') RETURNING id';
 
 
                 console.log(query);
@@ -200,6 +201,8 @@ module.exports = {
                         if (error.code === '23505') {
                             res.status(500).json({
                                 status: 500,
+                                error: error,
+
                                 message: "The email " + user.email + " is already registered, try again with a different one"
                             })
                             return;
@@ -219,14 +222,22 @@ module.exports = {
 
                     }
                     else {
+                        console.log("Inserted id: ", results.rows[0].id);
                         let list = results.rows;
                         let obj = {};
                         obj.list = list;
-                      //  obj.count = list.length;
-                        res.status(201).json({status: 201, message: "Successfully registered user!",obj:results});
+                        //  obj.count = list.length;
+                        let current = Math.floor(new Date().getTime() / 1000);
+                        let link = "https://kleanopsapi.herokuapp.com/api/validate/user/reg/" + current + "ko2vu1" + results.rows[0].id;
+                        sendEmailtoUserById(user.email, "Welcome to Kleanops", 'Please click <a href="' + link + '">here</a> to validate this user');
+                        res.status(201).json({
+                            status: 201,
+                            message: "Successfully registered user, check email to validate!",
+                            obj: results
+                        });
+
                     }
                 });
-
 
 
             });
@@ -343,7 +354,7 @@ module.exports = {
                     }
 
                     if (body.payment) {
-                        console.log("payment  ",body)
+                        console.log("payment  ", body)
                         fields.push("payment=" + body.payment + "");
                         somevalue = true;
                     }
@@ -362,7 +373,7 @@ module.exports = {
 
                             if (somevalue) {
                                 pool.query(query, (error, results) => {
-                                    console.log("result update with password: ",results);
+                                    console.log("result update with password: ", results);
                                     if (error) {
                                         console.log("error ", error);
                                         res.status(500).json({
@@ -383,7 +394,6 @@ module.exports = {
                                     message: ' Not valid update'
                                 })
                             }
-
 
 
                         });

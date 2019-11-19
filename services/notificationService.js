@@ -219,6 +219,13 @@ module.exports = {
 
     },
 
+    sendEmailtoUserById: (email, title, message) => {
+        return new Promise(function (resolve, reject) {
+            sendEmailtoUser(email, title, message);
+            resolve();
+        });
+    },
+
 
     sendNotificationByJob: (idJob, title, message) => {
         return new Promise(function (resolve, reject) {
