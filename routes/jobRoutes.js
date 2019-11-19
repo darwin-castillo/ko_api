@@ -27,6 +27,9 @@ const SELECT_JOBS = "SELECT    " +
     " jo.id_status, st.title as status_title, us.name as autor, us.id as id_autor, du.email as email_cleaner, " +
     "du.name as cleaner, du.id as id_cleaner ,  COUNT(kp.id_job) as total_proposals,  " +
     "json_build_object('title',lc.title, 'city',lc.city,'country',country,'phone',lc.phone,'postcode',lc.postcode,'address',lc.address, 'coordinates',lc.coordinates) as location " +
+    ",   ARRAY(\n" +
+    "       SELECT url FROM klop_job_images im \n" +
+    "        WHERE im.id_job = jo.id ) as images " +
     "FROM  public.klop_jobs as jo " +
     "LEFT OUTER JOIN public.klop_users as us on jo.users_id_autor = us.id " +
     "LEFT OUTER JOIN public.klop_users as du on jo.users_id_cleaner = du.id " +
