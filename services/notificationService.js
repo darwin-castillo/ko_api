@@ -1,24 +1,63 @@
+
+
 const axios = require('axios');
 const pool = require('../config/config').pool;
 const nodemailer = require('nodemailer');
 
+const mailjet = require ('node-mailjet')
+    .connect(MJ_APIKEY_PUBLIC,MJ_APIKEY_PRIVATE);
 
+const request = mailjet
+    .post("send", {'version': 'v3.1'})
+    .request({
+        "Messages":[{
+            "From": {
+                "Email": "pilot@mailjet.com",
+                "Name": "Mailjet Pilot"
+            },
+            "To": [{
+                "Email": "darwin.c5@gmail.com",
+                "Name": "passenger 1"
+            }],
+            "Subject": "Your email flight plan!",
+            "TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+            "HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
+        }]
+    })
+request
+    .then((result) => {
+        console.log("RESULT MAILJET: ",result.body)
+    })
+    .catch((err) => {
+        console.log("ERROR MAILJET: ", err.statusCode)
+    })
+
+//quxinxjrgdzeccwh
 let transporter = nodemailer.createTransport({
-    // host: 'smtp.gmail.com',
-    host:'in-v3.mailjet.com',
-    // port: 465,
-    port:587,
-    secure: false,
+    host: 'smtp.gmail.com',
+    //host:'in-v3.mailjet.com',
+     port: 465,
+   // port:587,
+    secure: true,
     auth: {
-        //  user: 'kleanops.notifications@gmail.com', // Your email id
-        user:'a3d43544e078504ca7912598c390a51c',
-        //pass: 'Ko123456.' // Your password
-        pass:'792724948c3546556fbc59b2dfccff9a'
+          user: 'kleanops.notifications@gmail.com', // Your email id
+        //user:'a3d43544e078504ca7912598c390a51c',
+        pass: 'quxinxjrgdzeccwh' // Your password
+      //  pass:'792724948c3546556fbc59b2dfccff9a'
     },
     tls: {
         ciphers:'SSLv3'
     }
 });
+
+sendEmailtoUser("darwin.c5@gmail.com","Test send email","test success!!").then((req)=>{
+    console.log(" send email: ",req);
+
+})
+    .catch(e=>{
+        console.log("error send email: ",e);
+    });
+
 
 
 
@@ -37,7 +76,7 @@ function sendEmailtoUser(email, title, message) {
 
         transporter.sendMail(mailOptions, function (errors, info) {
             if (errors) {
-                console.log(errors);
+                console.log("error send ",errors);
                 reject()
             } else {
                 console.log('Email sent [' + email + ']: ' + info.response);

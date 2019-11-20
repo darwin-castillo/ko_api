@@ -30,7 +30,8 @@ sequelize.authenticate()
         console.log('No se conecto Seq')
     })
 
-
+ MJ_APIKEY_PUBLIC='a3d43544e078504ca7912598c390a51c'
+MJ_APIKEY_PRIVATE='792724948c3546556fbc59b2dfccff9a'
 
 
 
@@ -43,5 +44,5 @@ const pool = new Pool({
 });
 
 
-module.exports = {pool,sequelize};
+module.exports = {pool,sequelize,MJ_APIKEY_PUBLIC,MJ_APIKEY_PRIVATE};
 
