@@ -7,6 +7,9 @@
     "devp": "nodemon src/app.js",
     "start": "node -v; npm install; node app.js"
   },
+  "engines": {
+    "node": "12.13.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
