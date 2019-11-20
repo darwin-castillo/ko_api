@@ -43,7 +43,7 @@ let transporter = nodemailer.createTransport({
           user: 'kleanops.notifications@gmail.com', // Your email id
         //user:'a3d43544e078504ca7912598c390a51c',
         pass: 'quxinxjrgdzeccwh' // Your password
-      //  pass:'792724948c3546556fbc59b2dfccff9a'
+       //  pass:'792724948c3546556fbc59b2dfccff9a'
     },
     tls: {
         ciphers:'SSLv3'
