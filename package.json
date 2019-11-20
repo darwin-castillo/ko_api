@@ -5,18 +5,16 @@
   "main": "app.js",
   "scripts": {
     "devp": "nodemon src/app.js",
-    "start": "node -v;rm -rf node_modules; npm install; node app.js"
+    "start": "node -v; npm install; node app.js"
   },
-  "engines": {
-    "node": "12.13.0"
-  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^3.2.1",
     "axios": "^0.19.0",
-    "bcrypt": "^3.0.4-napi",
+    "bcrypt": "https://github.com/kelektiv/node.bcrypt.js.git#master",
     "body-parser": "^1.19.0",
     "express": "^4.16.3",
     "express-useragent": "^1.0.12",
