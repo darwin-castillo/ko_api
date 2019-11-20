@@ -7,6 +7,9 @@
     "devp": "nodemon src/app.js",
     "start": "node app.js"
   },
+  "engines": {
+    "node": "10.16.0"
+  },
 
   "keywords": [],
   "author": "",
